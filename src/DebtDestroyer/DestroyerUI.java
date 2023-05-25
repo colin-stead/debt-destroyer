@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 public class DestroyerUI extends Application {
 
     @Override
+    // Hello
     public void start(Stage stage) {
         String javaVersion = System.getProperty("java.version");
         String javafxVersion = System.getProperty("javafx.version");
