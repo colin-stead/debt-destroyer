@@ -16,11 +16,13 @@ import java.util.ArrayList;
 public class Snowball {
 //ArrayList<Debt> debtList = new ArrayList<Debt>();
 String[][] debtCopy;
+ArrayList<Debt> debts = new ArrayList<Debt>();
 
 //Accepts arraylist of users debts income and expenses or we can do another object of of the user with thier expenses and income.
 Snowball(ArrayList<Debt> debtlist){
-//this.debtList= debtlist;
-copyDebt(debtlist);
+copyDebts(debtlist);
+sortDebtList();
+copyDebt(this.debts);
 }
 //TODO this is a place holder. going testing abilty to get name from this debt list from snowball class.
 public void getDebtName(int location){
@@ -44,6 +46,11 @@ private void copyDebt(ArrayList<Debt> debtList){
     }
 
 }
+private void copyDebts(ArrayList<Debt> debtList){
+for(int i=0; i<debtList.size(); i++){
+    debts.add(debtList.get(i));
+}
+}
 
 public void printMatrix(){
     //copyDebt();
@@ -59,6 +66,21 @@ public void printMatrix(){
 }
 
 //TODO sort all of the total amounts owed from lowes to greates.
+private void sortDebtList(){
+Debt temp; //Save swap element.
+
+for(int i=0; i<this.debts.size();i++){
+    for(int j=1; j<(this.debts.size()-i);j++){
+        if(debts.get(j-1).totalAmountOwed> debts.get(j).totalAmountOwed){
+            temp=debts.get(j-1);
+            debts.set(j-1, debts.get(j));
+            debts.set(j, temp);
+        }
+    }
+}
+
+
+}
 
 //TODO calc payoff timeframe based on paying min on non-lowest loan and paying max afforadable on lowest owed loan.
 }
