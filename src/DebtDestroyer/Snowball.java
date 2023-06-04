@@ -18,13 +18,14 @@ public class Snowball {
     // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
     ArrayList<Debt> debts = new ArrayList<Debt>();
-    Double lowestLoanInitialAmt = 0.0;
+    double lowestLoanInitialAmt, amountPay, totalInterest = 0.0;
     Month months;
 
     // Accepts arraylist of users debts income and expenses or we can do another
     // object of of the user with thier expenses and income.
     Snowball(ArrayList<Debt> debtlist) {
         this.debts = debtlist;
+        amountPay = 475.00;
         sortDebtList();
         copyDebt(this.debts);
         addAPR();
@@ -57,7 +58,7 @@ public class Snowball {
         }
 
     }
-
+    //Method used to print the String array to see the lender information
     public void printMatrix() {
         // copyDebt();
         for (int i = 0; i < debtCopy.length; i++) {
@@ -94,21 +95,47 @@ public class Snowball {
     // for each month a minimum payment will need to be applied to the loan so that
     // there is not a late fee applied.
     private void calculatePayoff() {
-        this.lowestLoanInitialAmt = Double.valueOf(this.debtCopy[0][1]); // set inital total amount owed value loan are
-                                                                          // sorted to the lowest loan is in the firts
-                                                                          // location.
+        // set inital total amount owed value loan are sorted to the lowest loan is in the first location.
+        this.lowestLoanInitialAmt = Double.valueOf(this.debtCopy[0][1]); 
+            if(amountPay>Double.valueOf(debtCopy[0][1])){
+                double temp =  amountPay - Double.valueOf(debtCopy[0][1]);
+                this.debtCopy[0][1] = String.valueOf(0.0);
+                System.out.println("Amount left to pay to the next loan is: " + temp);
+        }else{
+        this.debtCopy[0][1] = String.valueOf(Double.valueOf(debtCopy[0][1]) - amountPay);}
+        System.out.println("Amount after monthly pay off: " + this.debtCopy[0][1]);
         
 
     }
     private void addAPR(){
-        for(int times = 0; times < 5; times++){
-        for(int i=0; i<debtCopy.length; i++){
+        double currentInterest=0.0;
+        int month = 1;
+        int lowest = 0; //lowest loan is in the first[0] location
+        boolean paidInFull = false;
+        // while(Double.valueOf(debtCopy[lowest][1])>0.0){//make this a boolean value that will check that all loans are paid off.
+        while(paidInFull==false){//make this a boolean value that will check that all loans are paid off.
+        System.out.println("Month " + month);
+        for(int i=0; i<debtCopy.length; i++){ //for loop to cycle through all of the users loans. i may become lowests loan and we can propaly increnemt that var once its paid off so we dont have to keep checking a known paid off loan. 
             if(Double.valueOf(debtCopy[i][1]) !=0){
-                debtCopy[i][1] = String.valueOf((Double.valueOf(debtCopy[i][1]) * Double.valueOf(debtCopy[i][3])) + Double.valueOf(debtCopy[i][1]));
-                System.out.println(debtCopy[i][1]);
+                calculatePayoff();
+                currentInterest = (Double.valueOf(debtCopy[i][1]) * Double.valueOf(debtCopy[i][3]));
+                System.out.println(currentInterest);
+                this.totalInterest = this.totalInterest + currentInterest;
+                debtCopy[i][1] = String.valueOf(currentInterest + Double.valueOf(debtCopy[i][1]));
+                System.out.println("Amount after interst charges: " + debtCopy[i][1]);
             }
         }
+        System.out.println();
+        month++;
+        //Check that all loans are paid off
+        for(int i=lowest; i<debtCopy.length; i++){
+            if(Double.valueOf(debtCopy[i][1])==0.0){
+                paidInFull = true;
+            }else
+            paidInFull = false;
+        }
     }
+    System.out.println("Total interest paid through life of loan pay off was: " + totalInterest);
     }
 
     // TODO Add method to check/catch checking that the expenses plus all of the
