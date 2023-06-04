@@ -18,12 +18,13 @@ public class Snowball {
     // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
     ArrayList<Debt> debts = new ArrayList<Debt>();
-    double lowestLoanInitialAmt, amountPay, totalInterest = 0.0;
+    double lowestLoanInitialAmt, amountPay, totalInterest,previousDebtamount = 0.0;
+    int prevDebtgreater = 0;
     Month months;
 
     // Accepts arraylist of users debts income and expenses or we can do another
     // object of of the user with thier expenses and income.
-    Snowball(ArrayList<Debt> debtlist) {
+    Snowball(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
         amountPay = 475.00;
         sortDebtList();
@@ -94,10 +95,9 @@ public class Snowball {
     // To update totalPayoffValue update this.debtCopy[loan][1] = String.valueOf();
     // for each month a minimum payment will need to be applied to the loan so that
     // there is not a late fee applied.
-    private void calculatePayoff() {
+    private void calculatePayoff() throws DebtGrowingFasterThanPaying {
         // set inital total amount owed value loan are sorted to the lowest loan is in
         // the first location.
-        this.lowestLoanInitialAmt = Double.valueOf(this.debtCopy[0][1]);
         boolean paidInFull = false;
         int lowest = 0; // lowest loan is in the first[0] location
         int month =1;
@@ -109,6 +109,7 @@ public class Snowball {
                 System.out.println("Month " + month  + "\nLender - "  + debtCopy[lowest][0] + " is paid off\nAmount left to pay to the next loan is: " + temp);
                 this.amountPay+= Double.valueOf(debtCopy[lowest][2]);
                 System.out.println("New Monthly amount to pay: " + amountPay);
+                prevDebtgreater=0;
                 if(lowest+1<debtCopy.length){
                 lowest++;
                 System.out.println("lowest now = " + lowest + " New Loan being paid off is " + debtCopy[lowest][0]);
@@ -131,6 +132,7 @@ public class Snowball {
             }
         }
             addAPR(lowest);
+            this.previousDebtamount = Double.valueOf(debtCopy[lowest][1]);
             month++;
 
             for (int i = lowest; i < debtCopy.length; i++) {
@@ -139,9 +141,9 @@ public class Snowball {
                 } else
                     paidInFull = false;
             }
-            // if(month>150){
-            //     paidInFull = true;
-            // }
+              if(prevDebtgreater>5){
+                  throw new DebtGrowingFasterThanPaying(debtCopy[lowest][0],amountPay);
+              }
 
         }
         System.out.println("Total interest paid through life of loan pay off was: " + totalInterest);
@@ -162,6 +164,12 @@ public class Snowball {
                 debtCopy[i][1] = String.valueOf(currentInterest + Double.valueOf(debtCopy[i][1]));
                 System.out.println("Amount after interst charges: " + debtCopy[i][1]);
             }
+        }
+        if(Double.valueOf(debtCopy[lowest][1])> previousDebtamount){
+            prevDebtgreater++;
+        }
+        else{
+            prevDebtgreater=0;
         }
         System.out.println();
         
