@@ -17,16 +17,17 @@ import java.util.ArrayList;
 public class Snowball {
     // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
+    String[][] outputArray;
     ArrayList<Debt> debts = new ArrayList<Debt>();
-    double lowestLoanInitialAmt, amountPay, totalInterest,previousDebtamount = 0.0;
+    double lowestLoanInitialAmt, amountPay, totalInterest,previousDebtamount, income = 0.0;
     int prevDebtgreater = 0;
     Month months;
 
     // Accepts arraylist of users debts income and expenses or we can do another
     // object of of the user with thier expenses and income.
-    Snowball(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
+    Snowball(ArrayList<Debt> debtlist, double amountPayable) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
-        amountPay = 475.00;
+        this.amountPay = amountPayable; //ingest what the person can afford to pay minus all of the min monthly payments except the lowest loan that is being paid off.
         sortDebtList();
         copyDebt(this.debts);
         calculatePayoff();
