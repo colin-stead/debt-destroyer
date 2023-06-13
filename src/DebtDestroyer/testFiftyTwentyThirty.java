@@ -11,7 +11,10 @@ public class testFiftyTwentyThirty {
         debList.add(liberty);
         debList.add(American);
         debList.add(Citizens);
-        FiftyThirtyTwenty snow = new FiftyThirtyTwenty(debList, 3000, .1);
+        FiftyThirtyTwenty ftt = new FiftyThirtyTwenty(debList, 3000, .1);
+        ftt.updateAPR(.2);
+
+
     }
 }
 
