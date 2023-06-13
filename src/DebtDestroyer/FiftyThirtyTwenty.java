@@ -25,7 +25,7 @@ public class FiftyThirtyTwenty {
     Double twentyPercentIncome = 0.0;
     Double totalMonthlyDebtPayments = 0.0;
     Double totalAmountOwedAcrossAllDebt = 0.0;
-    Double APR = .08;
+    Double APR = 0.0;
     String[][] payOffData;
 
 
@@ -45,12 +45,6 @@ public class FiftyThirtyTwenty {
         //System.out.println("Min time to payoff: " + calculateMinTimeToPayOffWithTwentyPercentIncome());
     }
 
-    public void updateAPR(double newAPR){
-        this.APR = newAPR;
-        calculateMinTimeToPayOffWithTwentyPercentIncome();
-        calculatePayoff();
-    }
-
     private int calculateMinTimeToPayOffWithTwentyPercentIncome(){
         double monthlyAPR = this.APR/12;
         double exactTimeToPayOff = -((Math.log(1-(totalAmountOwedAcrossAllDebt*monthlyAPR)/twentyPercentIncome))/Math.log(1+monthlyAPR));
@@ -61,7 +55,6 @@ public class FiftyThirtyTwenty {
     private String[][] calculatePayoff(){
         Double yearsToPayOff = this.timeToPayOff/12.0;
         int x = (int) Math.ceil(yearsToPayOff);
-        System.out.println("Years to payoff: " + yearsToPayOff);
         String[][] payOffData = new String[x][5];
 
         double startingBalance = totalAmountOwedAcrossAllDebt;
@@ -78,7 +71,7 @@ public class FiftyThirtyTwenty {
             int year = i + 1;
             startingBalance = currentAmountRemaining;
             for (int month = 0; month < 12; month++) {
-                monthlyIntereest = currentAmountRemaining * (APR / 12);
+                monthlyIntereest = currentAmountRemaining * (this.APR / 12);
                 monthlyPaidToBalance = twentyPercentIncome - monthlyIntereest;
                 if (monthlyPaidToBalance > currentAmountRemaining) {
                     monthlyPaidToBalance = currentAmountRemaining;
@@ -97,7 +90,7 @@ public class FiftyThirtyTwenty {
             payOffData[i][3] = String.valueOf(yearlyAmountPaid);
             payOffData[i][4] = String.valueOf(currentAmountRemaining);
         }
-        printMatrix(payOffData);
+        //printMatrix(payOffData);
         return payOffData;
     }
 
@@ -105,7 +98,7 @@ public class FiftyThirtyTwenty {
         return payOffData;
     }
 
-    private void printMatrix(String[][] payOffData) {
+    public void printMatrix(String[][] payOffData) {
        for (int i = 0; i < payOffData.length; i++) {
             for (int j = 0; j < 5; j++) {
                 if (j == 3) {
