@@ -13,7 +13,7 @@ public class TestSnow {
     debList.add(Citizens);
     Snowball snow = new Snowball(debList,400);
     //snow.getOwedAmounts();
-    snow.printMatrix();
+    //snow.printMatrix();
 
 
     }  

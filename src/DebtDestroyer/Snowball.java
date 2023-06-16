@@ -3,7 +3,6 @@ package DebtDestroyer;
 import java.time.Month;
 import java.util.ArrayList;
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Package: DeptDestroyer                                            *
  * Class: Snowball      											 *
@@ -18,12 +17,12 @@ import java.util.ArrayList;
 public class Snowball {
     // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
-    String[][] outputArray;//0=year,1=amount,2=amountPaid,3=amountRemaining
+    String[][] outputArray;// 0=year,1=amount,2=amountPaid,3=amountRemaining
     String[] yearStart;
     double[] paidPY;
     ArrayList<String> loanTracker = new ArrayList<String>();
     ArrayList<Debt> debts = new ArrayList<Debt>();
-    double lowestLoanInitialAmt, amountPay, totalInterest,previousDebtamount, income = 0.0;
+    double lowestLoanInitialAmt, amountPay, totalInterest, previousDebtamount, income = 0.0;
     int prevDebtgreater = 0;
     Month months;
 
@@ -31,7 +30,8 @@ public class Snowball {
     // object of of the user with thier expenses and income.
     Snowball(ArrayList<Debt> debtlist, double amountPayable) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
-        this.amountPay = amountPayable; //ingest what the person can afford to pay minus all of the min monthly payments except the lowest loan that is being paid off.
+        this.amountPay = amountPayable; // ingest what the person can afford to pay minus all of the min monthly
+                                        // payments except the lowest loan that is being paid off.
         paidPY = new double[debtlist.size()];
         sortDebtList();
         copyDebt(this.debts);
@@ -62,7 +62,7 @@ public class Snowball {
             debtCopy[i][1] = String.valueOf(debtList.get(i).totalAmountOwed); // 1 = total amount owed
             debtCopy[i][2] = String.valueOf(debtList.get(i).minimumMonthlyPayment); // 2 = minumim montly payment amount
             debtCopy[i][3] = String.valueOf((debtList.get(i).APR / 100)); // 3 = Annual Precentage rate.
-            yearStart[i] = String.valueOf(debtList.get(i).totalAmountOwed); //set starting loan value.
+            yearStart[i] = String.valueOf(debtList.get(i).totalAmountOwed); // set starting loan value.
         }
 
     }
@@ -108,72 +108,83 @@ public class Snowball {
         // the first location.
         boolean paidInFull = false;
         int lowest = 0; // lowest loan is in the first[0] location
-        int month =1;
-        double temp =0.0;
+        int month = 1;
+        double temp = 0.0;
         while (paidInFull == false) {
             if (amountPay > Double.valueOf(debtCopy[lowest][1])) {
-                 temp = amountPay - Double.valueOf(debtCopy[lowest][1]);
+                temp = amountPay - Double.valueOf(debtCopy[lowest][1]);
                 this.debtCopy[lowest][1] = String.valueOf(0.0);
-            //    System.out.println("Month " + month  + "\nLender - "  + debtCopy[lowest][0] + " is paid off\nAmount left to pay to the next loan is: " + temp);
-                this.amountPay+= Double.valueOf(debtCopy[lowest][2]);
-            //    System.out.println("New Monthly amount to pay: " + amountPay);
-                paidPY[lowest] = (paidPY[lowest]+amountPay);
-                double year = (double) month/12.0;
-             //   System.out.println("\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-             //   System.out.println(debtCopy[lowest][0] +","+ year + "," +yearStart[lowest]+"," + paidPY[lowest] + ","+ debtCopy[lowest][1]);
-                    loanTracker.add(debtCopy[lowest][0] +","+ year + "," +yearStart[lowest]+"," + paidPY[lowest] + ","+ debtCopy[lowest][1]);
-                prevDebtgreater=0;
-                if(lowest+1<debtCopy.length){
-                lowest++;
-                // System.out.println("lowest now = " + lowest + " New Loan being paid off is " + debtCopy[lowest][0]);
+                // System.out.println("Month " + month + "\nLender - " + debtCopy[lowest][0] + "
+                // is paid off\nAmount left to pay to the next loan is: " + temp);
+                this.amountPay += Double.valueOf(debtCopy[lowest][2]);
+                // System.out.println("New Monthly amount to pay: " + amountPay);
+                paidPY[lowest] = (paidPY[lowest] + amountPay);
+                double year = (double) month / 12.0;
+                // System.out.println("\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
+                // System.out.println(debtCopy[lowest][0] +","+ year + ","
+                // +yearStart[lowest]+"," + paidPY[lowest] + ","+ debtCopy[lowest][1]);
+                loanTracker.add(debtCopy[lowest][0] + "," + year + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
+                        + debtCopy[lowest][1]);
+                prevDebtgreater = 0;
+                if (lowest + 1 < debtCopy.length) {
+                    lowest++;
+                    // System.out.println("lowest now = " + lowest + " New Loan being paid off is "
+                    // + debtCopy[lowest][0]);
                 }
             } else {
                 this.debtCopy[lowest][1] = String.valueOf(Double.valueOf(debtCopy[lowest][1]) - amountPay);
-                paidPY[lowest] = (paidPY[lowest]+amountPay);
-                // System.out.println("Month " + month  + "\nAmount after monthly pay off: " + this.debtCopy[lowest][1]+"/n/n");
-                
+                paidPY[lowest] = (paidPY[lowest] + amountPay);
+                // System.out.println("Month " + month + "\nAmount after monthly pay off: " +
+                // this.debtCopy[lowest][1]+"/n/n");
+
             }
-            //Pay the min values payments on all other loans so there are no extra finance charges.
-            if(lowest+1 <debtCopy.length){//if this is false then we are working on the last loan and we dont need to do this.
-            for(int i=lowest+1; i<debtCopy.length; i++){
-                //If there is a positive varance left over from the previous loan pay off apply it to the first loan minimum pay off.
-                if(temp>0.0){
-                    debtCopy[i][1] = String.valueOf(Double.valueOf(debtCopy[i][1])-(Double.valueOf(debtCopy[i][2]) + temp));
-                    paidPY[i] = paidPY[i]+ (Double.valueOf(debtCopy[i][2]) + temp);
-                    temp = 0.0;
-                }
-                else{
-                    debtCopy[i][1] = String.valueOf(Double.valueOf(debtCopy[i][1])-Double.valueOf(debtCopy[i][2]));
-                    paidPY[i] = paidPY[i]+ Double.valueOf(debtCopy[i][2]);
+            // Pay the min values payments on all other loans so there are no extra finance
+            // charges.
+            if (lowest + 1 < debtCopy.length) {// if this is false then we are working on the last loan and we dont need
+                                               // to do this.
+                for (int i = lowest + 1; i < debtCopy.length; i++) {
+                    // If there is a positive varance left over from the previous loan pay off apply
+                    // it to the first loan minimum pay off.
+                    if (temp > 0.0) {
+                        debtCopy[i][1] = String
+                                .valueOf(Double.valueOf(debtCopy[i][1]) - (Double.valueOf(debtCopy[i][2]) + temp));
+                        paidPY[i] = paidPY[i] + (Double.valueOf(debtCopy[i][2]) + temp);
+                        temp = 0.0;
+                    } else {
+                        debtCopy[i][1] = String
+                                .valueOf(Double.valueOf(debtCopy[i][1]) - Double.valueOf(debtCopy[i][2]));
+                        paidPY[i] = paidPY[i] + Double.valueOf(debtCopy[i][2]);
+                    }
                 }
             }
-        }
             addAPR(lowest);
             this.previousDebtamount = Double.valueOf(debtCopy[lowest][1]);
             month++;
 
             for (int i = lowest; i < debtCopy.length; i++) {
-                //on the year mark add the loan values to the string array
-                if(month%12==0){
-                double year = (double) month/12.0;
-             //   System.out.println("Lender name, Year, Begining Yr, Amt Paid, Amt Rem");
-            //    System.out.println(debtCopy[i][0] +","+ String.valueOf(year) + "," +yearStart[i]+"," + paidPY[i] + ","+ debtCopy[i][1]);
-                    loanTracker.add(debtCopy[i][0] +","+ year + "," +yearStart[i]+"," + paidPY[i] + ","+ debtCopy[i][1]);
-                    yearStart[i] = debtCopy[i][1];//The new year starting value becomes last years ending value.
+                // on the year mark add the loan values to the string array
+                if (month % 12 == 0) {
+                    double year = (double) month / 12.0;
+                    // System.out.println("Lender name, Year, Begining Yr, Amt Paid, Amt Rem");
+                    // System.out.println(debtCopy[i][0] +","+ String.valueOf(year) + ","
+                    // +yearStart[i]+"," + paidPY[i] + ","+ debtCopy[i][1]);
+                    loanTracker.add(
+                            debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
+                    yearStart[i] = debtCopy[i][1];// The new year starting value becomes last years ending value.
                 }
                 if (Double.valueOf(debtCopy[i][1]) == 0.0) {
                     paidInFull = true;
                 } else
                     paidInFull = false;
             }
-            
-              if(prevDebtgreater>5){
-                  throw new DebtGrowingFasterThanPaying(debtCopy[lowest][0],amountPay);
-              }
+
+            if (prevDebtgreater > 5) {
+                throw new DebtGrowingFasterThanPaying(debtCopy[lowest][0], amountPay);
+            }
 
         }
         System.out.println("\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-        for (int i=0; i<loanTracker.size(); i++){
+        for (int i = 0; i < loanTracker.size(); i++) {
             System.out.println(loanTracker.get(i));
         }
         System.out.println("\n\nTotal interest paid through life of loan pay off was: " + totalInterest);
@@ -192,16 +203,15 @@ public class Snowball {
                 currentInterest = (Double.valueOf(debtCopy[i][1]) * Double.valueOf(debtCopy[i][3]));
                 this.totalInterest = this.totalInterest + currentInterest;
                 debtCopy[i][1] = String.valueOf(currentInterest + Double.valueOf(debtCopy[i][1]));
-              //  System.out.println("Amount after interst charges: " + debtCopy[i][1]);
+                // System.out.println("Amount after interst charges: " + debtCopy[i][1]);
             }
         }
-        if(Double.valueOf(debtCopy[lowest][1])> previousDebtamount){
+        if (Double.valueOf(debtCopy[lowest][1]) > previousDebtamount) {
             prevDebtgreater++;
+        } else {
+            prevDebtgreater = 0;
         }
-        else{
-            prevDebtgreater=0;
-        }
-        
+
     }
 
     // TODO Add method to check/catch checking that the expenses plus all of the
