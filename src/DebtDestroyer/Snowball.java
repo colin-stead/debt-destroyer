@@ -18,6 +18,7 @@ public class Snowball {
     // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
     String[][] outputArray;// 0=year,1=amount,2=amountPaid,3=amountRemaining
+    String[][] payOffData; //0=Lender, 1=year,2=startingAmt,3=yrlyAmtPaid,4=amtRema
     String[] yearStart;
     double[] paidPY;
     ArrayList<String> loanTracker = new ArrayList<String>();
@@ -68,14 +69,14 @@ public class Snowball {
     }
 
     // Method used to print the String array to see the lender information
-    public void printMatrix() {
+    public void printMatrix(String[][] stringArray) {
         // copyDebt();
-        for (int i = 0; i < debtCopy.length; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (j == 3) {
-                    System.out.print(debtCopy[i][j] + " ");
+        for (int i = 0; i < stringArray.length; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (j == 4) {
+                    System.out.print(stringArray[i][j] + " ");
                 } else
-                    System.out.print(debtCopy[i][j] + ", ");
+                    System.out.print(stringArray[i][j] + ", ");
             }
             System.out.println();
         }
@@ -183,11 +184,17 @@ public class Snowball {
             }
 
         }
-        System.out.println("\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-        for (int i = 0; i < loanTracker.size(); i++) {
-            System.out.println(loanTracker.get(i));
-        }
-        System.out.println("\n\nTotal interest paid through life of loan pay off was: " + totalInterest);
+        //TODO Remove after debug
+        //  System.out.println("Printing ArrayList List\n\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
+        //  for (int i = 0; i < loanTracker.size(); i++) {
+        //      System.out.println(loanTracker.get(i));
+        //  }
+
+       // System.out.println("\n\nTotal interest paid through life of loan pay off was: " + totalInterest);
+        // System.out.println("\nPrinting first lender informaotin");
+         createMultiString(loanTracker);
+       //  System.out.println("Printing Matrix\n\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
+        // printMatrix(payOffData);
 
     }
 
@@ -216,5 +223,24 @@ public class Snowball {
 
     // TODO Add method to check/catch checking that the expenses plus all of the
     // minimum monthly payment are not greater than than the monthly income.
+
+    //TODO Create Multidimentional array to return to main.
+    private void createMultiString(ArrayList<String> debtInformation){
+        payOffData = new String[debtInformation.size()][5]; //Create multi-dim array to hold all of the debt information
+        //Cycle through debt information and save it into a multi dimentional array
+        for(int i=0; i<debtInformation.size(); i++){
+            String[] temp = debtInformation.get(i).split(",");
+            payOffData[i][0] = temp[0];//Lender
+            payOffData[i][1] = temp[1];//Year
+            payOffData[i][2] = temp[2];//Year Starting Balance
+            payOffData[i][3] = temp[3];//Yearly Amount Paid
+            payOffData[i][4] = temp[4];//Amount Remaining
+        }
+    
+    }
+
+    public String[][] getPayoff(){
+        return payOffData;
+    }
 
 }
