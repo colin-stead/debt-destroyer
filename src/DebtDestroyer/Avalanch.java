@@ -2,7 +2,6 @@ package DebtDestroyer;
 
 import java.time.Month;
 import java.util.ArrayList;
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Package: DeptDestroyer                                            *
  * Class: Snowball      											 *
@@ -14,8 +13,8 @@ import java.util.ArrayList;
  * shifts focus to the next lowest amount once that has been paid off*
  * and so on and so forth until all debt has been paid off.          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-public class Snowball {
-    // ArrayList<Debt> debtList = new ArrayList<Debt>();
+public class Avalanch {
+  // ArrayList<Debt> debtList = new ArrayList<Debt>();
     String[][] debtCopy;
     String[][] outputArray;// 0=year,1=amount,2=amountPaid,3=amountRemaining
     String[][] payOffData; //0=Lender, 1=year,2=startingAmt,3=yrlyAmtPaid,4=amtRema
@@ -29,7 +28,7 @@ public class Snowball {
 
     // Accepts arraylist of users debts income and expenses or we can do another
     // object of of the user with thier expenses and income.
-    Snowball(ArrayList<Debt> debtlist, double amountPayable) throws DebtGrowingFasterThanPaying {
+        Avalanch(ArrayList<Debt> debtlist, double amountPayable) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
         this.amountPay = amountPayable; // ingest what the person can afford to pay minus all of the min monthly
                                         // payments except the lowest loan that is being paid off.
@@ -39,22 +38,6 @@ public class Snowball {
         calculatePayoff();
     }
 
-    // TODO this is a place holder. going testing abilty to get name from this debt
-    // list from snowball class.
-    public void getDebtName(int location) {
-        // System.out.println(debtList.get(location).debtName);
-    }
-
-    // TODO create method to get all of the total amounts that are owed.
-    // public void getOwedAmounts(){
-    // for(int i=0; i<debtList.size();i++){
-    // System.out.println("Amount owed on " + debtList.get(i).getDebtName() + " is "
-    // + debtList.get(i).getTotalAmountOwed());
-    // }
-    // }
-    // Copy the debt object into a multi String array so that we can minupulate the
-    // data with out messing with the integrity of the data since its pass by
-    // referernece.
     private void copyDebt(ArrayList<Debt> debtList) {
         yearStart = new String[debtList.size()];
         this.debtCopy = new String[debtList.size()][4];
@@ -65,14 +48,17 @@ public class Snowball {
             debtCopy[i][3] = String.valueOf((debtList.get(i).APR / 100)); // 3 = Annual Precentage rate.
             yearStart[i] = String.valueOf(debtList.get(i).totalAmountOwed); // set starting loan value.
         }
+        System.out.println("Printing a copy of the User inputed sorted debt");
+        printMatrix(debtCopy, 4);
+        System.out.println("\n");
 
     }
 
     // Method used to print the String array to see the lender information
-    public void printMatrix(String[][] stringArray) {
+    public void printMatrix(String[][] stringArray,int columns) {
         // copyDebt();
         for (int i = 0; i < stringArray.length; i++) {
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < columns; j++) {
                 if (j == 4) {
                     System.out.print(stringArray[i][j] + " ");
                 } else
@@ -82,14 +68,13 @@ public class Snowball {
         }
     }
 
-    // TODO sort all of the total amounts owed from lowes to greates.
+    // TODO sort all of the APR's owed from lowest to greatest.
     private void sortDebtList() {
         Debt temp; // Save swap element.
-        // BubbleSort the loans on the from least total amount owed to greast amount
-        // owed.
+        // BubbleSort the loans on the from least APR to greatest.
         for (int i = 0; i < this.debts.size(); i++) {
             for (int j = 1; j < (this.debts.size() - i); j++) {
-                if (debts.get(j - 1).totalAmountOwed > debts.get(j).totalAmountOwed) {
+                if (debts.get(j - 1).APR < debts.get(j).APR) {
                     temp = debts.get(j - 1);
                     debts.set(j - 1, debts.get(j));
                     debts.set(j, temp);
@@ -99,12 +84,12 @@ public class Snowball {
 
     }
 
-    // TODO calc payoff timeframe based on paying min on non-lowest loan and paying
+    // TODO calc payoff timeframe based on paying max APR to min APR
     // max afforadable on lowest owed loan.
     // To update totalPayoffValue update this.debtCopy[loan][1] = String.valueOf();
     // for each month a minimum payment will need to be applied to the loan so that
     // there is not a late fee applied.
-    private void calculatePayoff() throws DebtGrowingFasterThanPaying {
+   private void calculatePayoff() throws DebtGrowingFasterThanPaying {
         // set inital total amount owed value loan are sorted to the lowest loan is in
         // the first location.
         boolean paidInFull = false;
@@ -198,7 +183,7 @@ public class Snowball {
 
     }
 
-    private void addAPR(int lowest) {
+   private void addAPR(int lowest) {
         double currentInterest = 0.0;
         // while(Double.valueOf(debtCopy[lowest][1])>0.0){//make this a boolean value
         // that will check that all loans are paid off.
@@ -242,5 +227,4 @@ public class Snowball {
     public String[][] getPayoff(){
         return payOffData;
     }
-
 }
