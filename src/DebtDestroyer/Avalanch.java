@@ -4,7 +4,7 @@ import java.time.Month;
 import java.util.ArrayList;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Package: DeptDestroyer                                            *
- * Class: Snowball      											 *
+ * Class: Avalanche      											 *
  * Author: DebtDestroyers											 *
  * Date: 27 May 2023											 	 *
  * Course CMSC 495 6382												 *
