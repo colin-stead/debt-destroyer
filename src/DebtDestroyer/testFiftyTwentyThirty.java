@@ -4,14 +4,25 @@ import java.util.ArrayList;
 
 public class testFiftyTwentyThirty {
     public static void main(String[] args) throws DebtGrowingFasterThanPaying {
-        Debt Citizens = new Debt("USAA", 3000.00, 500, 1.5);
-        Debt liberty = new Debt("NFCU", 5000.00, 25, .7);
-        Debt American = new Debt("Wells Fargo", 9000.00, 100, 1.5);
-        ArrayList<Debt> debList = new ArrayList<Debt>();
-        debList.add(liberty);
-        debList.add(American);
-        debList.add(Citizens);
-        FiftyThirtyTwenty snow = new FiftyThirtyTwenty(debList, 3000, .1);
+        Debt USAA = new Debt("USAA", 3000.00, 500, 1.5);
+        Debt NFCU = new Debt("NFCU", 5000.00, 25, .7);
+        Debt WellsFargo = new Debt("Wells Fargo", 9000.00, 100, 1.5);
+        ArrayList<Debt> debtList = new ArrayList<Debt>();
+        debtList.add(USAA);
+        debtList.add(NFCU);
+        debtList.add(WellsFargo);
+        System.out.println("test 1");
+        FiftyThirtyTwenty ftt = new FiftyThirtyTwenty(debtList, 3000, .1);
+        String[][] payoffDetails = ftt.getPayoff();
+        ftt.printMatrix(payoffDetails);
+        System.out.println("test 2");
+        Debt Regions = new Debt("Regions", 2000.00, 100, 1.5);
+        debtList.add(Regions);
+        ftt = new FiftyThirtyTwenty(debtList, 4000, .2);
+        payoffDetails = ftt.getPayoff();
+        ftt.printMatrix(payoffDetails);
+
+
     }
 }
 
