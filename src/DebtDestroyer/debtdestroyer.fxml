@@ -29,9 +29,9 @@
 	                         <Font name="System Bold" size="19.0" />
 	                      </font>
 	                   </Label>
-	                   <Label layoutX="37.0" layoutY="32.0" prefHeight="44.0" prefWidth="471.0" text="First, lets get some basic information on your income and current living situation. Please fill out the inputs to the best of your knowledge." wrapText="true" />
-	                   <TextField layoutX="37.0" layoutY="88.0" prefHeight="44.0" prefWidth="327.0" promptText="Salary (Anually)" style="-fx-border-color: skyBlue;" />
-	                   <TextField layoutX="403.0" layoutY="88.0" prefHeight="44.0" prefWidth="327.0" promptText="Monthly Expenses" style="-fx-border-color: skyBlue;" />
+	                   <Label layoutX="37.0" layoutY="32.0" prefHeight="44.0" prefWidth="699.0" text="First, lets get some basic information on your income and current living situation. Please fill out the inputs to the best of your knowledge and exclude minimum monthly payments on loans from monthly expenses." wrapText="true" />
+	                   <TextField fx:id="incomeEntry" layoutX="37.0" layoutY="88.0" prefHeight="44.0" prefWidth="327.0" promptText="Salary (After Tax, Anually)" style="-fx-border-color: skyBlue;" />
+	                   <TextField fx:id="monthlyExpenseEntry" layoutX="403.0" layoutY="88.0" prefHeight="44.0" prefWidth="327.0" promptText="Monthly Expenses" style="-fx-border-color: skyBlue;" />
 	                </children>
 	             </Pane>
 	             <Pane fx:id="debtPane" layoutX="14.0" layoutY="275.0" prefHeight="219.0" prefWidth="759.0" style="-fx-border-color: lightGray;">
@@ -42,19 +42,20 @@
 	                      </font>
 	                   </Label>
 	                   <Label layoutX="37.0" layoutY="32.0" prefHeight="59.0" prefWidth="663.0" text="Now lets get your loan information. Please enter all of your loans and in their total amount field enter the amount they currently stand at. This will ensure we have accurate data and give you the best information possible to pay these debts off." wrapText="true" />
-	                   <TextField fx:id="originalAmountEntry" layoutX="35.0" layoutY="115.0" prefHeight="44.0" prefWidth="220.0" promptText="Total Amount" style="-fx-border-color: skyBlue;" />
-	                   <TextField layoutX="512.0" layoutY="115.0" prefHeight="44.0" prefWidth="220.0" promptText="Interest Rate" style="-fx-border-color: skyBlue;" />
-	                   <TextField layoutX="273.0" layoutY="115.0" prefHeight="44.0" prefWidth="220.0" promptText="Minimum Monthly Payment" style="-fx-border-color: skyBlue;" />
+	                   <TextField fx:id="originalLoanProviderEntry" layoutX="37.0" layoutY="115.0" prefHeight="44.0" prefWidth="204.0" promptText="Loan Provider" style="-fx-border-color: skyBlue;" />
+	                   <TextField fx:id="originalAmountEntry" layoutX="251.0" layoutY="115.0" prefHeight="44.0" prefWidth="162.0" promptText="Total Amount" style="-fx-border-color: skyBlue;" />
+	                   <TextField fx:id="originalMinimumMonthlyPaymentEntry" layoutX="420.0" layoutY="115.0" prefHeight="44.0" prefWidth="196.0" promptText="Minimum Monthly Payment" style="-fx-border-color: skyBlue;" />
+	                   <TextField fx:id="originalInterestRateEntry" layoutX="626.0" layoutY="115.0" prefHeight="44.0" prefWidth="106.0" promptText="Interest Rate" style="-fx-border-color: skyBlue;" />
 	                   <Label fx:id="originalLabel" layoutX="37.0" layoutY="91.0" text="Debt #1">
 	                      <font>
 	                         <Font name="System Bold" size="19.0" />
 	                      </font>
 	                   </Label>
 	                   <Button fx:id="addDebtBtn" layoutX="703.0" layoutY="181.0" mnemonicParsing="false" onAction="#addDebtField" style="-fx-background-color: skyBlue; -fx-background-radius: 100;" text="+" textFill="WHITE" />
-                  	   <Button fx:id="deleteDebtBtn" visible="false" layoutX="671.0" layoutY="181.0" mnemonicParsing="false" onAction="#deleteDebtField" style="-fx-background-color: tomato; -fx-background-radius: 100;" text="x" textFill="WHITE" />
+                  	   <Button fx:id="deleteDebtBtn" layoutX="671.0" layoutY="181.0" mnemonicParsing="false" onAction="#deleteDebtField" style="-fx-background-color: tomato; -fx-background-radius: 100;" text="x" textFill="WHITE" visible="false" />
 	                </children>
 	             </Pane>
-            <Button fx:id="calculatePayoff" layoutX="320.0" layoutY="505.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="147.0" style="-fx-background-color: skyBlue; -fx-background-radius: 10;" text="Calculate Payoff" textFill="WHITE" />
+            <Button fx:id="calculatePayoff" layoutX="320.0" layoutY="505.0" mnemonicParsing="false" onAction="#calculateDebts" prefHeight="40.0" prefWidth="147.0" style="-fx-background-color: skyBlue; -fx-background-radius: 10;" text="Calculate Payoff" textFill="WHITE" />
 	    </children>
     </AnchorPane>
   </content>
