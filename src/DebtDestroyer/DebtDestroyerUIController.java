@@ -240,7 +240,14 @@ public class DebtDestroyerUIController {
 			this.snowballPane.getChildren().add(snowballInfo);
 			
 			// Add Snowball method button
-			this.calculateSnowball.setOnAction(e -> calculateSnowball());
+			this.calculateSnowball.setOnAction(e -> {
+				try {
+					calculateSnowball();
+				} catch (DebtGrowingFasterThanPaying e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 			this.calculateSnowball.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
 			this.calculateSnowball.setTextFill(Color.WHITE);
 			this.calculateSnowball.setLayoutY(200.0);
@@ -300,7 +307,14 @@ public class DebtDestroyerUIController {
 			this.avalanchePane.getChildren().add(avalancheInfo);
 			
 			// Add avalanche method
-			this.calculateAvalanche.setOnAction(e -> calculateAvalanche());
+			this.calculateAvalanche.setOnAction(e -> {
+				try {
+					calculateAvalanche();
+				} catch (DebtGrowingFasterThanPaying e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 			this.calculateAvalanche.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
 			this.calculateAvalanche.setTextFill(Color.WHITE);
 			this.calculateAvalanche.setLayoutY(200.0);
@@ -322,10 +336,7 @@ public class DebtDestroyerUIController {
 	
 	// Creates debts from entries given, calculates maximum monthly payments
 	private void createDebts() {
-		if (this.debtEntries.size() > 1) {
-			this.debtEntries.clear();
-			this.debtEntries.add(new ArrayList<TextField>());
-		}
+		// TODO fix recalc
 		
 		this.debtEntries.get(0).clear();
 		this.debtEntries.get(0).add(originalLoanProviderEntry);
@@ -390,16 +401,22 @@ public class DebtDestroyerUIController {
 		}
 	}
 	
-	public void calculateAvalanche() {
-		System.out.println("Will run avalanche method");
+	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
+		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
+		String[][] snowprint = snow.getPayoff();
+		System.out.println();
+		snow.printMatrix(snowprint);
 	}
 	
 	public void calculateFiftyThirtyTwenty() {
 		System.out.println("Will run 50/30/20");
 	}
 	
-	public void calculateSnowball() {
-		System.out.println("Will run Snowball");
+	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
+		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
+		String[][] aveprint = ave.getPayoff();
+		System.out.println();
+		ave.printMatrix(aveprint, 5);
 	}
 	
 	// Lowers all the elements in the pane with the pane
