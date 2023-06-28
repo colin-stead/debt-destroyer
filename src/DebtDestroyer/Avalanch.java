@@ -100,28 +100,21 @@ public class Avalanch {
             if (amountPay > Double.valueOf(debtCopy[lowest][1])) {
                 temp = amountPay - Double.valueOf(debtCopy[lowest][1]);
                 this.debtCopy[lowest][1] = String.valueOf(0.0);
-                // System.out.println("Month " + month + "\nLender - " + debtCopy[lowest][0] + "
-                // is paid off\nAmount left to pay to the next loan is: " + temp);
                 this.amountPay += Double.valueOf(debtCopy[lowest][2]);
-                // System.out.println("New Monthly amount to pay: " + amountPay);
                 paidPY[lowest] = (paidPY[lowest] + amountPay);
-                double year = (double) month / 12.0;
-                // System.out.println("\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-                // System.out.println(debtCopy[lowest][0] +","+ year + ","
-                // +yearStart[lowest]+"," + paidPY[lowest] + ","+ debtCopy[lowest][1]);
-                loanTracker.add(debtCopy[lowest][0] + "," + year + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
+                int years = (int)month%12;
+                double year = (month+1) / 12.0;
+                System.out.println("Month before the payoff" + month);
+                loanTracker.add(debtCopy[lowest][0] + "," + (int)month/12 +" Years "+ ((month+1)-(((int)month/12)*12)) + " Month" + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
                         + debtCopy[lowest][1]);
                 prevDebtgreater = 0;
                 if (lowest + 1 < debtCopy.length) {
                     lowest++;
-                    // System.out.println("lowest now = " + lowest + " New Loan being paid off is "
-                    // + debtCopy[lowest][0]);
                 }
             } else {
                 this.debtCopy[lowest][1] = String.valueOf(Double.valueOf(debtCopy[lowest][1]) - amountPay);
                 paidPY[lowest] = (paidPY[lowest] + amountPay);
-                // System.out.println("Month " + month + "\nAmount after monthly pay off: " +
-                // this.debtCopy[lowest][1]+"/n/n");
+                
 
             }
             // Pay the min values payments on all other loans so there are no extra finance
@@ -151,9 +144,6 @@ public class Avalanch {
                 // on the year mark add the loan values to the string array
                 if (month % 12 == 0) {
                     double year = (double) month / 12.0;
-                    // System.out.println("Lender name, Year, Begining Yr, Amt Paid, Amt Rem");
-                    // System.out.println(debtCopy[i][0] +","+ String.valueOf(year) + ","
-                    // +yearStart[i]+"," + paidPY[i] + ","+ debtCopy[i][1]);
                     loanTracker.add(
                             debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
                     yearStart[i] = debtCopy[i][1];// The new year starting value becomes last years ending value.
@@ -169,23 +159,12 @@ public class Avalanch {
             }
 
         }
-        //TODO Remove after debug
-        //  System.out.println("Printing ArrayList List\n\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-        //  for (int i = 0; i < loanTracker.size(); i++) {
-        //      System.out.println(loanTracker.get(i));
-        //  }
-
-       // System.out.println("\n\nTotal interest paid through life of loan pay off was: " + totalInterest);
-        // System.out.println("\nPrinting first lender informaotin");
          createMultiString(loanTracker);
-       //  System.out.println("Printing Matrix\n\nLender name, Year, Begining Yr, Amt Paid, Amt Rem");
-        // printMatrix(payOffData);
 
     }
 
    private void addAPR(int lowest) {
         double currentInterest = 0.0;
-        // while(Double.valueOf(debtCopy[lowest][1])>0.0){//make this a boolean value
         // that will check that all loans are paid off.
         for (int i = lowest; i < debtCopy.length; i++) { // for loop to cycle through all of the users loans. i may
                                                          // become lowests loan and we can propaly increnemt that var
@@ -195,7 +174,6 @@ public class Avalanch {
                 currentInterest = (Double.valueOf(debtCopy[i][1]) * Double.valueOf(debtCopy[i][3]));
                 this.totalInterest = this.totalInterest + currentInterest;
                 debtCopy[i][1] = String.valueOf(currentInterest + Double.valueOf(debtCopy[i][1]));
-                // System.out.println("Amount after interst charges: " + debtCopy[i][1]);
             }
         }
         if (Double.valueOf(debtCopy[lowest][1]) > previousDebtamount) {
