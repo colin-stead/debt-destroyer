@@ -94,45 +94,53 @@ public class Avalanch {
         // the first location.
         boolean paidInFull = false;
         int lowest = 0; // lowest loan is in the first[0] location
-        int month = 1;
+        int month = 0;
         double temp = 0.0;
         while (paidInFull == false) {
             if (amountPay > Double.valueOf(debtCopy[lowest][1])) {
                 temp = amountPay - Double.valueOf(debtCopy[lowest][1]);
+                paidPY[lowest] = (paidPY[lowest] + Double.valueOf(debtCopy[lowest][1]));
                 this.debtCopy[lowest][1] = String.valueOf(0.0);
-                this.amountPay += Double.valueOf(debtCopy[lowest][2]);
-                paidPY[lowest] = (paidPY[lowest] + amountPay);
-                int years = (int)month%12;
-                double year = (month+1) / 12.0;
-                System.out.println("Month before the payoff" + month);
-                loanTracker.add(debtCopy[lowest][0] + "," + (int)month/12 +" Years "+ ((month+1)-(((int)month/12)*12)) + " Month" + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
+                System.out.println("adding " + debtCopy[lowest][0] + " min payment of " + debtCopy[lowest][2] + " to amount payable initial value is: " + amountPay);
+                if(lowest+1 < debtCopy.length){
+                amountPay += Double.valueOf(debtCopy[lowest+1][2]);
+                }
+                System.out.println("new value is: " + amountPay);
+//                int years = (int)month%12;
+               // double year = (month+1) / 12.0;
+                if((int)month/12<1){
+                    loanTracker.add(debtCopy[lowest][0] + "," + ((month+1)-(((int)month/12)*12)) + " Month(s)" + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
                         + debtCopy[lowest][1]);
+                }else{
+                loanTracker.add(debtCopy[lowest][0] + "," + (int)month/12 +" Year(s) "+ ((month+1)-(((int)month/12)*12)) + " Month(s)" + "," + yearStart[lowest] + "," + paidPY[lowest] + ","
+                        + debtCopy[lowest][1]);}
                 prevDebtgreater = 0;
                 if (lowest + 1 < debtCopy.length) {
                     lowest++;
                 }
+               
             } else {
                 this.debtCopy[lowest][1] = String.valueOf(Double.valueOf(debtCopy[lowest][1]) - amountPay);
                 paidPY[lowest] = (paidPY[lowest] + amountPay);
-                
 
             }
             // Pay the min values payments on all other loans so there are no extra finance
             // charges.
             if (lowest + 1 < debtCopy.length) {// if this is false then we are working on the last loan and we dont need
                                                // to do this.
-                for (int i = lowest + 1; i < debtCopy.length; i++) {
+                for (int i = lowest+1; i < debtCopy.length; i++) {
                     // If there is a positive varance left over from the previous loan pay off apply
                     // it to the first loan minimum pay off.
                     if (temp > 0.0) {
                         debtCopy[i][1] = String
                                 .valueOf(Double.valueOf(debtCopy[i][1]) - (Double.valueOf(debtCopy[i][2]) + temp));
-                        paidPY[i] = paidPY[i] + (Double.valueOf(debtCopy[i][2]) + temp);
+                        paidPY[i] += (paidPY[i] + (Double.valueOf(debtCopy[i][2]) + temp));
                         temp = 0.0;
                     } else {
                         debtCopy[i][1] = String
                                 .valueOf(Double.valueOf(debtCopy[i][1]) - Double.valueOf(debtCopy[i][2]));
-                        paidPY[i] = paidPY[i] + Double.valueOf(debtCopy[i][2]);
+                        paidPY[i] = (paidPY[i] + Double.valueOf(debtCopy[i][2]));
+                        System.out.println(debtCopy[i][0] + " minumum payment of " + debtCopy[i][2] + " paid total amount paid is now " + paidPY[i] );
                     }
                 }
             }
@@ -147,6 +155,9 @@ public class Avalanch {
                     loanTracker.add(
                             debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
                     yearStart[i] = debtCopy[i][1];// The new year starting value becomes last years ending value.
+                    //reset amount paid per year to 0
+                    System.out.println(debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
+                    paidPY[i]=0;
                 }
                 if (Double.valueOf(debtCopy[i][1]) == 0.0) {
                     paidInFull = true;
