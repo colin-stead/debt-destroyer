@@ -35,6 +35,7 @@ public class Avalanch {
         paidPY = new double[debtlist.size()];
         sortDebtList();
         copyDebt(this.debts);
+        remMinMonthly();
         calculatePayoff();
     }
 
@@ -102,9 +103,8 @@ public class Avalanch {
                 paidPY[lowest] = (paidPY[lowest] + Double.valueOf(debtCopy[lowest][1]));
                 this.debtCopy[lowest][1] = String.valueOf(0.0);
                 System.out.println("adding " + debtCopy[lowest][0] + " min payment of " + debtCopy[lowest][2] + " to amount payable initial value is: " + amountPay);
-                if(lowest+1 < debtCopy.length){
-                amountPay += Double.valueOf(debtCopy[lowest+1][2]);
-                }
+                
+                amountPay += Double.valueOf(debtCopy[lowest][2]);
                 System.out.println("new value is: " + amountPay);
 //                int years = (int)month%12;
                // double year = (month+1) / 12.0;
@@ -120,8 +120,10 @@ public class Avalanch {
                 }
                
             } else {
-                this.debtCopy[lowest][1] = String.valueOf(Double.valueOf(debtCopy[lowest][1]) - amountPay);
-                paidPY[lowest] = (paidPY[lowest] + amountPay);
+                
+                System.out.println("Amount paid: " +(amountPay + Double.valueOf(debtCopy[lowest][2])) + " on " + debtCopy[lowest][0] + " loan");
+                this.debtCopy[lowest][1] = String.valueOf(Double.valueOf(debtCopy[lowest][1]) - (amountPay + Double.valueOf(debtCopy[lowest][2])));
+                paidPY[lowest] = (paidPY[lowest] + (amountPay + Double.valueOf(debtCopy[lowest][2])));
 
             }
             // Pay the min values payments on all other loans so there are no extra finance
@@ -197,6 +199,12 @@ public class Avalanch {
 
     // TODO Add method to check/catch checking that the expenses plus all of the
     // minimum monthly payment are not greater than than the monthly income.
+    private void remMinMonthly(){
+        for(int i=0;i<debtCopy.length; i++){
+            amountPay = (amountPay - Double.valueOf(debtCopy[i][2]));
+        }
+        System.out.println("New monthly amount payable after min montly subtracted is: " + amountPay);
+    }
 
     //TODO Create Multidimentional array to return to main.
     private void createMultiString(ArrayList<String> debtInformation){
