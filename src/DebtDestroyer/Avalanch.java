@@ -154,8 +154,13 @@ public class Avalanch {
                 // on the year mark add the loan values to the string array
                 if (month % 12 == 0) {
                     double year = (double) month / 12.0;
-                    loanTracker.add(
-                            debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
+                if(((int)month/12 > 1))
+                    loanTracker.add(debtCopy[i][0] + "," + (int)month/12 +" Years "+ "," + yearStart[i] + "," + paidPY[i] + ","
+                        + debtCopy[i][1]);
+                else{
+                   loanTracker.add(debtCopy[i][0] + "," + (int)month/12 +" Year "+ "," + yearStart[i] + "," + paidPY[i] + ","
+                        + debtCopy[i][1]); 
+                }
                     yearStart[i] = debtCopy[i][1];// The new year starting value becomes last years ending value.
                     //reset amount paid per year to 0
                     System.out.println(debtCopy[i][0] + "," + year + "," + yearStart[i] + "," + paidPY[i] + "," + debtCopy[i][1]);
@@ -197,15 +202,7 @@ public class Avalanch {
 
     }
 
-    // TODO Add method to check/catch checking that the expenses plus all of the
-    // minimum monthly payment are not greater than than the monthly income.
-    private void remMinMonthly(){
-        for(int i=0;i<debtCopy.length; i++){
-            amountPay = (amountPay - Double.valueOf(debtCopy[i][2]));
-        }
-        System.out.println("New monthly amount payable after min montly subtracted is: " + amountPay);
-    }
-
+    
     //TODO Create Multidimentional array to return to main.
     private void createMultiString(ArrayList<String> debtInformation){
         payOffData = new String[debtInformation.size()][5]; //Create multi-dim array to hold all of the debt information
@@ -218,9 +215,18 @@ public class Avalanch {
             payOffData[i][3] = temp[3];//Yearly Amount Paid
             payOffData[i][4] = temp[4];//Amount Remaining
         }
-    
+        
+    }
+    // TODO Add method to check/catch checking that the expenses plus all of the
+    // minimum monthly payment are not greater than than the monthly income.
+    private void remMinMonthly(){
+        for(int i=0;i<debtCopy.length; i++){
+            amountPay = (amountPay - Double.valueOf(debtCopy[i][2]));
+        }
+        System.out.println("New monthly amount payable after min montly subtracted is: " + amountPay);
     }
 
+    
     public String[][] getPayoff(){
         return payOffData;
     }
