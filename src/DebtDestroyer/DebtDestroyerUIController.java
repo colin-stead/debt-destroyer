@@ -405,7 +405,7 @@ public class DebtDestroyerUIController {
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
 		String[][] snowprint = snow.getPayoff();
 		System.out.println();
-		snow.printMatrix(snowprint);
+		snow.printMatrix(snowprint,5);
 	}
 	
 	public void calculateFiftyThirtyTwenty() {
