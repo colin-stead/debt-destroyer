@@ -120,10 +120,18 @@ this.debtCopy = debtCopy;
                 } else
                     paidInFull = false;
             }
-
-            if (prevDebtgreater > 5) {
+            try {
+                if (prevDebtgreater > 5) {
+                paidInFull =true;
                 throw new DebtGrowingFasterThanPaying(debtCopy[lowest][0], amountPay);
             }
+            } catch (Exception e) {
+             debtGrowingError(debtCopy);
+            }
+            // if (prevDebtgreater > 5) {
+            //     paidInFull =true;
+            //     throw new DebtGrowingFasterThanPaying(debtCopy[lowest][0], amountPay);
+            // }
 
         }
         createMultiString(loanTracker);
@@ -177,5 +185,12 @@ this.debtCopy = debtCopy;
         for(int i=0; i<debtCopy.length; i++){
            yearStart[i] = String.valueOf(debtCopy[i][1]); // set starting loan value.
         }
-    }  
+    } 
+    public void debtGrowingError(String[][] debtCopy){
+        loanTracker = new ArrayList<String>();
+        for(int i=0; i<debtCopy.length; i++){
+            loanTracker.add(debtCopy[i][0] + "," + "N/A" +"," + "N/A" + "," + "N/A" +","+ "N/A");
+            
+            }
+        }
 }
