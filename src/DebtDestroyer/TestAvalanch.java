@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class TestAvalanch {
         static String[][] avalanchPayoffAmt;
     public static void main(String[] args) throws DebtGrowingFasterThanPaying {
-        Debt Citizens = new Debt("Citizens", 20190, 200, 1.5);
+    //    Debt Citizens = new Debt("Citizens", 20190, 200, 1.5);
+        Debt Citizens = new Debt("Citizens", 20190, 200, 3.0);
         Debt liberty = new Debt("Liberty Mutial", 12580, 50, 1.2);
         Debt American = new Debt("American Express", 6600, 100, 2.5);
         ArrayList<Debt> debList = new ArrayList<Debt>();
