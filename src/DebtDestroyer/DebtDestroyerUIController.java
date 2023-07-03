@@ -2,6 +2,9 @@ package DebtDestroyer;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -84,11 +87,8 @@ public class DebtDestroyerUIController {
 			this.congrats.setLayoutY(this.congrats.getLayoutY() + 90);
 			this.congratsAmount.setLayoutY(this.congratsAmount.getLayoutY() + 90);
 			this.snowballPane.setLayoutY(this.snowballPane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.snowballPane, true);
 			this.fiftyThirtyTwentyPane.setLayoutY(this.fiftyThirtyTwentyPane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.fiftyThirtyTwentyPane, true);
 			this.avalanchePane.setLayoutY(this.avalanchePane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.avalanchePane, true);
 		}
 		
 		// Adds the total amount field
@@ -164,11 +164,8 @@ public class DebtDestroyerUIController {
 			this.congrats.setLayoutY(this.congrats.getLayoutY() - 90);
 			this.congratsAmount.setLayoutY(this.congratsAmount.getLayoutY() - 90);
 			this.snowballPane.setLayoutY(this.snowballPane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.snowballPane, false);
 			this.fiftyThirtyTwentyPane.setLayoutY(this.fiftyThirtyTwentyPane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.fiftyThirtyTwentyPane, false);
 			this.avalanchePane.setLayoutY(this.avalanchePane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.avalanchePane, false);
 		}
 		
 		// Sets the loan number back one so our number is accurate next time we add a debt
@@ -277,7 +274,14 @@ public class DebtDestroyerUIController {
 			this.fiftyThirtyTwentyPane.getChildren().add(fiftyThirtyTwentyInfo);
 			
 			// Add 50/30/20 Method
-			this.calculateFiftyThirtyTwenty.setOnAction(e -> calculateFiftyThirtyTwenty());
+			this.calculateFiftyThirtyTwenty.setOnAction(e -> {
+				try {
+					calculateFiftyThirtyTwenty();
+				} catch (DebtGrowingFasterThanPaying e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 			this.calculateFiftyThirtyTwenty.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
 			this.calculateFiftyThirtyTwenty.setTextFill(Color.WHITE);
 			this.calculateFiftyThirtyTwenty.setLayoutY(200.0);
@@ -337,7 +341,7 @@ public class DebtDestroyerUIController {
 	// Creates debts from entries given, calculates maximum monthly payments
 	private void createDebts() {
 		// TODO fix recalc
-		
+		this.debts.clear();
 		this.debtEntries.get(0).clear();
 		this.debtEntries.get(0).add(originalLoanProviderEntry);
 		this.debtEntries.get(0).add(originalAmountEntry);
@@ -404,33 +408,41 @@ public class DebtDestroyerUIController {
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
 		String[][] snowprint = snow.getPayoff();
-		System.out.println();
+		
+		TreeTableView<Map> treeView = new TreeTableView<Map>();
+		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();
+		
+		for (int i = 0; i < snowprint.length; i++) {
+			if (data.containsKey(snowprint[i][0])) {
+				ArrayList<String[]> temp = data.get(snowprint[i][0]);
+				String[] tempArray = {snowprint[i][1], snowprint[i][2], snowprint[i][3], snowprint[i][4]};
+				temp.add(tempArray);
+				
+				data.put(snowprint[i][0], temp);
+			} else {
+				ArrayList<String[]> temp = new ArrayList<String[]>();
+				String[] tempArray = {snowprint[i][1], snowprint[i][2], snowprint[i][3], snowprint[i][4]};
+				temp.add(tempArray);
+				data.put(snowprint[i][0], temp);
+			}
+		}
+		
 		snow.printMatrix(snowprint);
 	}
 	
-	public void calculateFiftyThirtyTwenty() {
-		System.out.println("Will run 50/30/20");
+	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
+		double income = Double.valueOf(this.incomeEntry.getText());
+		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 4.0);
 	}
 	
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
 		String[][] aveprint = ave.getPayoff();
 		System.out.println();
+		for (int i = 0; i < aveprint[0].length; i++) {
+			System.out.println(aveprint[0][i]);
+		}
+		System.out.println();
 		ave.printMatrix(aveprint, 5);
-	}
-	
-	// Lowers all the elements in the pane with the pane
-	private void updatePaneChildrenPos(Pane pane, Boolean lowering) {
-//		if (lowering) {
-//			ObservableList<Node> children = pane.getChildren();
-//			for (Node child : children) {
-//				child.setLayoutY(child.getLayoutY() + 90);
-//			}
-//		} else {
-//			ObservableList<Node> children = pane.getChildren();
-//			for (Node child : children) {
-//				child.setLayoutY(child.getLayoutY() - 90);
-//			}
-//		}
 	}
 }
