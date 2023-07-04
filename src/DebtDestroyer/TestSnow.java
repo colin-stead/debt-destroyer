@@ -5,16 +5,14 @@ import java.util.ArrayList;
 public class TestSnow {
     static String[][] SnowballPayoffAmt;
     public static void main(String[] args) throws DebtGrowingFasterThanPaying {
-        Debt Citizens = new Debt("Citizens", 7000, 500, 1.5);
-        Debt liberty = new Debt("Liberty Mutial", 11000, 25, .7);
-        Debt American = new Debt("American Express", 10000, 100, 1.5);
+       Debt Citizens = new Debt("Citizens", 20190, 200, 1.2);
+        Debt liberty = new Debt("Liberty Mutial", 12580, 50, 3.9);
         ArrayList<Debt> debList = new ArrayList<Debt>();
     debList.add(liberty);
-    debList.add(American);
     debList.add(Citizens);
-    Snowball snow = new Snowball(debList,400);
+    Snowball snow = new Snowball(debList,850);
     SnowballPayoffAmt= snow.getPayoff();
-    snow.printMatrix(SnowballPayoffAmt);
+    snow.printMatrix(SnowballPayoffAmt,5);
 
 
     }  
