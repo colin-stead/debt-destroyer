@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -189,8 +190,16 @@ public class DebtDestroyerUIController {
 			// Adds original debt entries to our array
 			this.createDebts();
 			// Creates payment panels so users can choose a debt payoff option
-			this.generatePaymentPanels();
-			this.hasRun = true; // Error, this gets set to true and if there's an error in the code it breaks functionality.
+			// Only needs to generate if the program hasn't run before
+			if (!this.hasRun) {
+				try {
+					this.generatePaymentPanels();
+				} catch (Exception e) {
+					this.hasRun = false;
+				}
+			}
+			
+			System.out.println(hasRun);
 		} catch (Exception e) {
 			System.err.println("Error in creating info");
 		}
@@ -241,8 +250,14 @@ public class DebtDestroyerUIController {
 				try {
 					calculateSnowball();
 				} catch (DebtGrowingFasterThanPaying e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
 				}
 			});
 			this.calculateSnowball.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
@@ -278,8 +293,14 @@ public class DebtDestroyerUIController {
 				try {
 					calculateFiftyThirtyTwenty();
 				} catch (DebtGrowingFasterThanPaying e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
 				}
 			});
 			this.calculateFiftyThirtyTwenty.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
@@ -315,8 +336,14 @@ public class DebtDestroyerUIController {
 				try {
 					calculateAvalanche();
 				} catch (DebtGrowingFasterThanPaying e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
 				}
 			});
 			this.calculateAvalanche.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
@@ -335,6 +362,8 @@ public class DebtDestroyerUIController {
 				this.window.getChildren().add(this.congrats);
 				this.window.getChildren().add(this.congratsAmount);
 			}
+			
+			this.hasRun = window.getChildren().contains(this.avalanchePane);
 		}
 	}
 	
@@ -352,7 +381,6 @@ public class DebtDestroyerUIController {
 		try {
 			// Get starting maximum monthly payment
 			this.maximumMonthlyPayment = (Double.valueOf(this.incomeEntry.getText()) / 12) - (Double.valueOf(this.monthlyExpenseEntry.getText()));
-			System.out.println("maximum monthly payment thus far: " + this.maximumMonthlyPayment);
 		} catch (Exception e) {
 			// Display error message if entry's are invalid
 			Alert alert = new Alert(AlertType.ERROR);
@@ -427,7 +455,18 @@ public class DebtDestroyerUIController {
 			}
 		}
 		
-		snow.printMatrix(snowprint);
+		for (Entry<String, ArrayList<String[]>> entry : data.entrySet()) {
+			System.out.println("Key: " + entry.getKey());
+			for (int i = 0; i < entry.getValue().size(); i++) {
+				String[] strArr = entry.getValue().get(i);
+				for (int j = 0; j < strArr.length; j++) {
+					System.out.print(strArr[j] + ", ");
+				}
+				System.out.println();
+			}
+		}
+		
+		
 	}
 	
 	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
