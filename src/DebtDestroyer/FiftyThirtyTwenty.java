@@ -104,7 +104,12 @@ public class FiftyThirtyTwenty {
                     break; // exit loop
                 }
                 else {
-                    yearString = String.valueOf(year +1);
+                    if (year < 2){
+                        yearString = String.valueOf(year +1) + "Year";
+                    }
+                    else {
+                        yearString = String.valueOf(year + 1) + "Years";
+                    }
                 }
                // System.out.println("Year: " + year + " Month: " + month + 1 + " Monthly Paid to balance: " + monthlyPaidToBalance +
                //         " Monthly Interest: " + monthlyIntereest + " monthly Balance Remaining: " + currentAmountRemaining);
@@ -126,7 +131,7 @@ public class FiftyThirtyTwenty {
     public void printMatrix(String[][] payOffData) {
        for (int i = 0; i < payOffData.length; i++) {
             for (int j = 0; j < 5; j++) {
-                if (j == 3) {
+                if (j == 4) {
                     System.out.print(payOffData[i][j] + " ");
                 } else
                     System.out.print(payOffData[i][j] + ", ");
