@@ -49,6 +49,7 @@ public class FiftyThirtyTwenty {
         double monthlyAPR = this.APR/12;
         double exactTimeToPayOff = -((Math.log(1-(totalAmountOwedAcrossAllDebt*monthlyAPR)/twentyPercentIncome))/Math.log(1+monthlyAPR));
         int  minMonthsTimeToPayoff = (int) Math.ceil(exactTimeToPayOff);
+        //System.out.println(minMonthsTimeToPayoff);
         return minMonthsTimeToPayoff;
     }
 
@@ -68,7 +69,8 @@ public class FiftyThirtyTwenty {
         // inner loop (j) goes through each month of the year to determine the amount paid to balance and interest to get
         // the yearly information.
         for (int i = 0; i <= yearsToPayOff; i++){
-            int year = i + 1;
+            int year = i;
+            String yearString = new String();
             startingBalance = currentAmountRemaining;
             for (int month = 0; month < 12; month++) {
                 monthlyIntereest = currentAmountRemaining * (this.APR / 12);
@@ -79,13 +81,36 @@ public class FiftyThirtyTwenty {
                 currentAmountRemaining = currentAmountRemaining - monthlyPaidToBalance;
                 yearlyAmountPaid = yearlyAmountPaid + monthlyPaidToBalance + monthlyIntereest;
                 if (currentAmountRemaining == 0){
-                    month = 11; // exit loop
+                    month = month + 1;
+                    if (year == 0 && month < 2){
+                        yearString = month +" Month";
+                    }
+                    else if (year == 0 && month >= 2){
+                        yearString = month +" Months";
+                    }
+                    else if (year == 1 && month < 2){
+                        yearString = year + " Year "+ month +" Month";
+                    }
+                    else if (year == 1 && month >= 2){
+                        yearString = year + " Year "+ month +" Months";
+                    }
+                    else if (year > 1 && month < 2){
+                        yearString = year + " Years "+ month +" Month";
+                    }
+                    else {
+                        yearString = year + " Years "+ month +" Months";
+                    }
+                   // System.out.println(year + " " + month);
+                    break; // exit loop
+                }
+                else {
+                    yearString = String.valueOf(year +1);
                 }
                // System.out.println("Year: " + year + " Month: " + month + 1 + " Monthly Paid to balance: " + monthlyPaidToBalance +
                //         " Monthly Interest: " + monthlyIntereest + " monthly Balance Remaining: " + currentAmountRemaining);
             }
             payOffData[i][0] = "50/30/20";
-            payOffData[i][1] = String.valueOf(year);
+            payOffData[i][1] = yearString;
             payOffData[i][2] = String.valueOf(startingBalance);
             payOffData[i][3] = String.valueOf(yearlyAmountPaid);
             payOffData[i][4] = String.valueOf(currentAmountRemaining);
