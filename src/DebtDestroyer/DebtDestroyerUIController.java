@@ -63,6 +63,11 @@ public class DebtDestroyerUIController {
 	
 	// Add a new debt field
 	public void addDebtField () {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		// Sets delete debt button visible because there's more than one debt
 		// Updates label Y position and entry Y position for first entry
 		if (this.loanNumber == 1) {
@@ -150,6 +155,10 @@ public class DebtDestroyerUIController {
 	// Delete most recently added debt field
 	public void deleteDebtField() {
 		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		// Removes the five most recent children from the debt pane (Debt Entry)
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
