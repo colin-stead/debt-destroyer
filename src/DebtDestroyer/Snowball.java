@@ -23,15 +23,22 @@ public class Snowball {
     double[] paidPY;
     ArrayList<String> loanTracker = new ArrayList<String>();
     ArrayList<Debt> debts = new ArrayList<Debt>();
-    double totalInterest, previousDebtamount, income = 0.0;
-   // double amountPay;
+    double amountPay, totalInterest, previousDebtamount, income = 0.0;
     int prevDebtgreater = 0;
     Month months;
     // Accepts arraylist of users debts income and expenses or we can do another
     // object of of the user with their expenses and income.
-    Snowball(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
+    Snowball(ArrayList<Debt> debtlist, double amountPayable) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
+        this.amountPay = amountPayable; // ingest what the person can afford to pay minus all of the min monthly
                                         // payments except the lowest loan that is being paid off.
+        paidPY = new double[debtlist.size()];
+        sortDebtList();
+        copyDebt(this.debts);
+      //  calculatePayoff();
+    }
+     Snowball(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
+        this.debts = debtlist;
         paidPY = new double[debtlist.size()];
         sortDebtList();
         copyDebt(this.debts);
@@ -43,19 +50,19 @@ public class Snowball {
    public String[][] getDebtList(){
         return debtCopy;
     }
-    //  public double getAmtPay(){
-    //     calcPayAmount();
-    //     return amountPay;
-    // }
-    //  private void calcPayAmount(){
-    //      remMinMonthly();
-    // }
-    // private void remMinMonthly(){
-    //     for(int i=0;i<debtCopy.length; i++){
-    //         amountPay = (amountPay - Double.valueOf(debtCopy[i][2]));
-    //     }
-    //     System.out.println("New monthly amount payable after min montly subtracted is: " + amountPay);
-    // }
+     public double getAmtPay(){
+        calcPayAmount();
+        return amountPay;
+    }
+     private void calcPayAmount(){
+         remMinMonthly();
+    }
+    private void remMinMonthly(){
+        for(int i=0;i<debtCopy.length; i++){
+            amountPay = (amountPay - Double.valueOf(debtCopy[i][2]));
+        }
+        System.out.println("New monthly amount payable after min montly subtracted is: " + amountPay);
+    }
     // Copy the debt object into a multi String array so that we can minupulate the
     // data with out messing with the integrity of the data since its pass by
     // referernece.
