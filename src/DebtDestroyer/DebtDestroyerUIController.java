@@ -444,8 +444,9 @@ public class DebtDestroyerUIController {
 	@SuppressWarnings("unchecked")
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
 		this.dataPane.getChildren().clear();
-		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
+//		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
+		Snowball snow = new Snowball(this.debts);
+		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), this.maximumMonthlyPayment);
 		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
 		
 		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
@@ -565,8 +566,8 @@ public class DebtDestroyerUIController {
 	
 	@SuppressWarnings("unchecked")
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
-		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
+		Avalanch ave = new Avalanch(this.debts);
+		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), this.maximumMonthlyPayment);
 		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
 		
 		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();

@@ -13,15 +13,15 @@ public class TestAvalanch {
     debList.add(liberty);
     debList.add(American);
     debList.add(Citizens);
-    Avalanch ava = new Avalanch(debList,850);
+    Avalanch ava = new Avalanch(debList);
     // avalanchPayoffAmt= ava.getPayoff();
     System.out.println("Lender,Year,StartAmt,YrlyAmtPaid,AmtRem");
-    CalcPayoff avaPayoff = new CalcPayoff(ava.getDebtList(), ava.getAmtPay());
+    CalcPayoff avaPayoff = new CalcPayoff(ava.getDebtList(),850);
     ava.printMatrix(avaPayoff.getPayoffInfo(),5);
-    Snowball snow = new Snowball(debList, 850);
+    // Snowball snow = new Snowball(debList, 850);
    System.out.println("\n\nPrinting out Snowball calculations:\n\nLender,Year,StartAmt,YrlyAmtPaid,AmtRem");
-   CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
-    snow.printMatrix(snowPayoff.getPayoffInfo(),5);
+//   CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
+    // snow.printMatrix(snowPayoff.getPayoffInfo(),5);
 
 //ava.printMatrix(ava.getPayoff(), 5);
 
