@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -23,6 +25,7 @@ public class DebtDestroyerUIController {
 	public Button addDebtBtn;
 	public AnchorPane window;
 	public Pane debtPane;
+	public Pane dataPane = new Pane();
 	public Label originalLabel;
 	public Button calculatePayoff;
 	public Button deleteDebtBtn;
@@ -146,6 +149,7 @@ public class DebtDestroyerUIController {
 	
 	// Delete most recently added debt field
 	public void deleteDebtField() {
+		this.dataPane.getChildren().clear();
 		// Removes the five most recent children from the debt pane (Debt Entry)
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
@@ -186,6 +190,8 @@ public class DebtDestroyerUIController {
 	
 	// Creates debts, and components to choose what method you would like to use to 
 	public void calculateDebts() {
+		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+		
 		try {
 			// Adds original debt entries to our array
 			this.createDebts();
@@ -197,6 +203,8 @@ public class DebtDestroyerUIController {
 				} catch (Exception e) {
 					this.hasRun = false;
 				}
+			} else {
+				this.congratsAmount.setText(formatter.format(this.maximumMonthlyPayment) + " extra per month");
 			}
 			
 			System.out.println(hasRun);
@@ -433,29 +441,117 @@ public class DebtDestroyerUIController {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
-		String[][] snowprint = snow.getPayoff();
+		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
+		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
 		
-		TreeTableView<Map> treeView = new TreeTableView<Map>();
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
+		
+		for (int i = 0; i < snowPayoffInfo.length; i++) {
+			if (data.containsKey(snowPayoffInfo[i][0])) {
+				ObservableList<DebtDisplay> temp = data.get(snowPayoffInfo[i][0]);
+				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				
+				data.put(snowPayoffInfo[i][0], temp);
+			} else {
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
+				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				data.put(snowPayoffInfo[i][0], temp);
+			}
+		}
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
+			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
+			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
+			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
+			
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 460);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(10);
+			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
+		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 350);
+		this.window.getChildren().add(dataPane);
+		
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
+		double income = Double.valueOf(this.incomeEntry.getText());
+		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 4.0);
+		
+		String[][] fiftyThirtyTwentyPayoff = fiftyThirtyTwenty.getPayoff();
 		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();
 		
-		for (int i = 0; i < snowprint.length; i++) {
-			if (data.containsKey(snowprint[i][0])) {
-				ArrayList<String[]> temp = data.get(snowprint[i][0]);
-				String[] tempArray = {snowprint[i][1], snowprint[i][2], snowprint[i][3], snowprint[i][4]};
+		for (int i = 0; i < fiftyThirtyTwentyPayoff.length; i++) {
+			if (data.containsKey(fiftyThirtyTwentyPayoff[i][0])) {
+				ArrayList<String[]> temp = data.get(fiftyThirtyTwentyPayoff[i][0]);
+				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
 				temp.add(tempArray);
 				
-				data.put(snowprint[i][0], temp);
+				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
 			} else {
 				ArrayList<String[]> temp = new ArrayList<String[]>();
-				String[] tempArray = {snowprint[i][1], snowprint[i][2], snowprint[i][3], snowprint[i][4]};
+				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
 				temp.add(tempArray);
-				data.put(snowprint[i][0], temp);
+				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
 			}
 		}
 		
 		for (Entry<String, ArrayList<String[]>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			TableColumn yearCol = new TableColumn("Year");
+			TableColumn amountCol = new TableColumn("Amount Start");
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			TableColumn leftCol = new TableColumn("Amount Left");
+			
+			tableView.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
 			System.out.println("Key: " + entry.getKey());
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				String[] strArr = entry.getValue().get(i);
@@ -465,23 +561,48 @@ public class DebtDestroyerUIController {
 				System.out.println();
 			}
 		}
-		
-		
 	}
 	
-	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
-		double income = Double.valueOf(this.incomeEntry.getText());
-		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 4.0);
-	}
-	
+	@SuppressWarnings("unchecked")
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
-		String[][] aveprint = ave.getPayoff();
-		System.out.println();
-		for (int i = 0; i < aveprint[0].length; i++) {
-			System.out.println(aveprint[0][i]);
+		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
+		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
+		
+		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();
+		
+		for (int i = 0; i < avePayoffInfo.length; i++) {
+			if (data.containsKey(avePayoffInfo[i][0])) {
+				ArrayList<String[]> temp = data.get(avePayoffInfo[i][0]);
+				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
+				temp.add(tempArray);
+				
+				data.put(avePayoffInfo[i][0], temp);
+			} else {
+				ArrayList<String[]> temp = new ArrayList<String[]>();
+				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
+				temp.add(tempArray);
+				data.put(avePayoffInfo[i][0], temp);
+			}
 		}
-		System.out.println();
-		ave.printMatrix(aveprint, 5);
+		
+		for (Entry<String, ArrayList<String[]>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			TableColumn yearCol = new TableColumn("Year");
+			TableColumn amountCol = new TableColumn("Amount Start");
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			TableColumn leftCol = new TableColumn("Amount Left");
+			
+			tableView.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
+			System.out.println("Key: " + entry.getKey());
+			for (int i = 0; i < entry.getValue().size(); i++) {
+				String[] strArr = entry.getValue().get(i);
+				for (int j = 0; j < strArr.length; j++) {
+					System.out.print(strArr[j] + ", ");
+				}
+				System.out.println();
+			}
+		}
 	}
 }
