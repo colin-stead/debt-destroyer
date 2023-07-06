@@ -403,7 +403,8 @@ public class DebtDestroyerUIController {
 	
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
-		String[][] snowprint = snow.getPayoff();
+		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(),this.maximumMonthlyPayment);
+		String[][] snowprint = snowPayoff.getPayoffInfo();
 		System.out.println();
 		snow.printMatrix(snowprint,5);
 	}
@@ -414,7 +415,8 @@ public class DebtDestroyerUIController {
 	
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
-		String[][] aveprint = ave.getPayoff();
+		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(),this.maximumMonthlyPayment);
+		String[][] aveprint = avePayoff.getPayoffInfo();
 		System.out.println();
 		ave.printMatrix(aveprint, 5);
 	}
