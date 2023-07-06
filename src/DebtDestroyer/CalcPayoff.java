@@ -166,17 +166,23 @@ this.debtCopy = debtCopy;
 
     
     //TODO Create Multidimentional array to return to main.
-    private void createMultiString(ArrayList<String> debtInformation){
+    private void createMultiString(ArrayList<String> debtInformation) throws DebtGrowingFasterThanPaying {
     	NumberFormat formatter = NumberFormat.getCurrencyInstance();
         payOffData = new String[debtInformation.size()][5]; //Create multi-dim array to hold all of the debt information
         //Cycle through debt information and save it into a multi dimentional array
-        for(int i=0; i<debtInformation.size(); i++){
-            String[] temp = debtInformation.get(i).split(",");
-            payOffData[i][0] = temp[0];//Lender
-            payOffData[i][1] = temp[1];//Year
-            payOffData[i][2] = formatter.format(Double.valueOf(temp[2]));//Year Starting Balance
-            payOffData[i][3] = formatter.format(Double.valueOf(temp[3]));//Yearly Amount Paid
-            payOffData[i][4] = formatter.format(Double.valueOf(temp[4]));//Amount Remaining
+        String[] temp = null;
+        
+        try {
+	        for(int i=0; i<debtInformation.size(); i++){
+	            temp = debtInformation.get(i).split(",");
+	            payOffData[i][0] = temp[0];//Lender
+	            payOffData[i][1] = temp[1];//Year
+	            payOffData[i][2] = formatter.format(Double.valueOf(temp[2]));//Year Starting Balance
+	            payOffData[i][3] = formatter.format(Double.valueOf(temp[3]));//Yearly Amount Paid
+	            payOffData[i][4] = formatter.format(Double.valueOf(temp[4]));//Amount Remaining
+	        }
+        } catch (NumberFormatException e) {
+        	throw new DebtGrowingFasterThanPaying(temp[0], this.amountPay);
         }
             
         

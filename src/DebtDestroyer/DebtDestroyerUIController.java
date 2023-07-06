@@ -398,6 +398,18 @@ public class DebtDestroyerUIController {
 		try {
 			// Get starting maximum monthly payment
 			this.maximumMonthlyPayment = (Double.valueOf(this.incomeEntry.getText()) / 12) - (Double.valueOf(this.monthlyExpenseEntry.getText()));
+			if (this.maximumMonthlyPayment <= 0) {
+				throw new ExpensesGreaterthanIncome();
+			}
+		} catch (ExpensesGreaterthanIncome e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setHeaderText("Expenses Greater Than Income");
+			alert.setContentText("Your expenses are greater than your income! Please consider finding a way to lower your monthly expenses.");
+			alert.showAndWait().ifPresent(response -> {
+			    if (response == ButtonType.OK) {
+			    	alert.close();
+			    }
+			});
 		} catch (Exception e) {
 			// Display error message if entry's are invalid
 			Alert alert = new Alert(AlertType.ERROR);
@@ -453,6 +465,10 @@ public class DebtDestroyerUIController {
 	@SuppressWarnings("unchecked")
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
 		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
 		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
 		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
@@ -473,6 +489,19 @@ public class DebtDestroyerUIController {
 				data.put(snowPayoffInfo[i][0], temp);
 			}
 		}
+		
+		Label methodTitle = new Label("Snowball Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the Snowbal method, here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
 		
 		int reps = 1;
 		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
@@ -508,11 +537,11 @@ public class DebtDestroyerUIController {
 			if (reps > 1) {
 				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
 				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
-				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 460);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
 			} else {
 				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
 				this.dataPane.setPrefHeight(450);
-				tableView.setLayoutY(10);
+				tableView.setLayoutY(70);
 			}
 			
 			this.dataPane.getChildren().add(tableView);
@@ -523,7 +552,8 @@ public class DebtDestroyerUIController {
 		}
 		
 		this.dataPane.setLayoutX(70);
-		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 350);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
 		this.window.getChildren().add(dataPane);
 		
 		
@@ -531,87 +561,191 @@ public class DebtDestroyerUIController {
 	
 	@SuppressWarnings("unchecked")
 	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		double income = Double.valueOf(this.incomeEntry.getText());
-		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 4.0);
+		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 7.0);
 		
 		String[][] fiftyThirtyTwentyPayoff = fiftyThirtyTwenty.getPayoff();
-		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
 		
 		for (int i = 0; i < fiftyThirtyTwentyPayoff.length; i++) {
 			if (data.containsKey(fiftyThirtyTwentyPayoff[i][0])) {
-				ArrayList<String[]> temp = data.get(fiftyThirtyTwentyPayoff[i][0]);
+				ObservableList<DebtDisplay> temp = data.get(fiftyThirtyTwentyPayoff[i][0]);
 				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
-				temp.add(tempArray);
+				temp.add(new DebtDisplay(tempArray));
 				
 				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
 			} else {
-				ArrayList<String[]> temp = new ArrayList<String[]>();
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
 				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
-				temp.add(tempArray);
+				temp.add(new DebtDisplay(tempArray));
 				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
 			}
 		}
 		
-		for (Entry<String, ArrayList<String[]>> entry : data.entrySet()) {
+		Label methodTitle = new Label("Avalanche Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the 50/30/20 method. We assume your consolidated loan has an interest rate of 7.0%. Here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
 			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
 			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
 			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
 			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
 			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
 			
-			tableView.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
 			
-			System.out.println("Key: " + entry.getKey());
-			for (int i = 0; i < entry.getValue().size(); i++) {
-				String[] strArr = entry.getValue().get(i);
-				for (int j = 0; j < strArr.length; j++) {
-					System.out.print(strArr[j] + ", ");
-				}
-				System.out.println();
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(70);
 			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
 		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
+		this.window.getChildren().add(dataPane);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
 		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
 		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
 		
-		Map<String, ArrayList<String[]>> data = new HashMap<String, ArrayList<String[]>>();
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
 		
 		for (int i = 0; i < avePayoffInfo.length; i++) {
 			if (data.containsKey(avePayoffInfo[i][0])) {
-				ArrayList<String[]> temp = data.get(avePayoffInfo[i][0]);
+				ObservableList<DebtDisplay> temp = data.get(avePayoffInfo[i][0]);
 				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
-				temp.add(tempArray);
+				temp.add(new DebtDisplay(tempArray));
 				
 				data.put(avePayoffInfo[i][0], temp);
 			} else {
-				ArrayList<String[]> temp = new ArrayList<String[]>();
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
 				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
-				temp.add(tempArray);
+				temp.add(new DebtDisplay(tempArray));
 				data.put(avePayoffInfo[i][0], temp);
 			}
 		}
 		
-		for (Entry<String, ArrayList<String[]>> entry : data.entrySet()) {
+		Label methodTitle = new Label("Avalanche Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the Avalanche method, here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
 			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
 			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
 			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
 			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
 			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
 			
-			tableView.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
 			
-			System.out.println("Key: " + entry.getKey());
-			for (int i = 0; i < entry.getValue().size(); i++) {
-				String[] strArr = entry.getValue().get(i);
-				for (int j = 0; j < strArr.length; j++) {
-					System.out.print(strArr[j] + ", ");
-				}
-				System.out.println();
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(70);
 			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
 		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
+		this.window.getChildren().add(dataPane);
 	}
 }

@@ -16,8 +16,8 @@ public class DebtGrowingFasterThanPaying extends Exception {
         System.err.println("The loan is growing faster than you can pay it off you must find a lower APR than "
         + APR + " or choose another method as the payments will exceed your 20% income: " + twentyPercentIncome);
         
-        errorMessage = "The loan is growing faster than you can pay it off you must find a lower APR than \"\n"
-        		+ "        + APR + \" or choose another method as the payments will exceed your 20% income: " + twentyPercentIncome;
+        errorMessage = "The loan is growing faster than you can pay it off you must find a lower APR than "
+        		        + APR + "% or choose another method as the payments will exceed your 20% income: " + twentyPercentIncome;
         // System.exit(0);
     }
 
