@@ -555,8 +555,6 @@ public class DebtDestroyerUIController {
 		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
 		
 		this.window.getChildren().add(dataPane);
-		
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -747,5 +745,6 @@ public class DebtDestroyerUIController {
 		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
 		
 		this.window.getChildren().add(dataPane);
+
 	}
 }
