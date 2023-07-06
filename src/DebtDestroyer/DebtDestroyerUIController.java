@@ -2,12 +2,18 @@ package DebtDestroyer;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -19,6 +25,7 @@ public class DebtDestroyerUIController {
 	public Button addDebtBtn;
 	public AnchorPane window;
 	public Pane debtPane;
+	public Pane dataPane = new Pane();
 	public Label originalLabel;
 	public Button calculatePayoff;
 	public Button deleteDebtBtn;
@@ -56,6 +63,11 @@ public class DebtDestroyerUIController {
 	
 	// Add a new debt field
 	public void addDebtField () {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		// Sets delete debt button visible because there's more than one debt
 		// Updates label Y position and entry Y position for first entry
 		if (this.loanNumber == 1) {
@@ -84,11 +96,8 @@ public class DebtDestroyerUIController {
 			this.congrats.setLayoutY(this.congrats.getLayoutY() + 90);
 			this.congratsAmount.setLayoutY(this.congratsAmount.getLayoutY() + 90);
 			this.snowballPane.setLayoutY(this.snowballPane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.snowballPane, true);
 			this.fiftyThirtyTwentyPane.setLayoutY(this.fiftyThirtyTwentyPane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.fiftyThirtyTwentyPane, true);
 			this.avalanchePane.setLayoutY(this.avalanchePane.getLayoutY() + 90);
-			this.updatePaneChildrenPos(this.avalanchePane, true);
 		}
 		
 		// Adds the total amount field
@@ -145,6 +154,11 @@ public class DebtDestroyerUIController {
 	
 	// Delete most recently added debt field
 	public void deleteDebtField() {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		// Removes the five most recent children from the debt pane (Debt Entry)
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
 		this.debtPane.getChildren().remove(this.debtPane.getChildren().size() - 1);
@@ -164,11 +178,8 @@ public class DebtDestroyerUIController {
 			this.congrats.setLayoutY(this.congrats.getLayoutY() - 90);
 			this.congratsAmount.setLayoutY(this.congratsAmount.getLayoutY() - 90);
 			this.snowballPane.setLayoutY(this.snowballPane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.snowballPane, false);
 			this.fiftyThirtyTwentyPane.setLayoutY(this.fiftyThirtyTwentyPane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.fiftyThirtyTwentyPane, false);
 			this.avalanchePane.setLayoutY(this.avalanchePane.getLayoutY() - 90);
-			this.updatePaneChildrenPos(this.avalanchePane, false);
 		}
 		
 		// Sets the loan number back one so our number is accurate next time we add a debt
@@ -188,12 +199,24 @@ public class DebtDestroyerUIController {
 	
 	// Creates debts, and components to choose what method you would like to use to 
 	public void calculateDebts() {
+		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+		
 		try {
 			// Adds original debt entries to our array
 			this.createDebts();
 			// Creates payment panels so users can choose a debt payoff option
-			this.generatePaymentPanels();
-			this.hasRun = true; // Error, this gets set to true and if there's an error in the code it breaks functionality.
+			// Only needs to generate if the program hasn't run before
+			if (!this.hasRun) {
+				try {
+					this.generatePaymentPanels();
+				} catch (Exception e) {
+					this.hasRun = false;
+				}
+			} else {
+				this.congratsAmount.setText(formatter.format(this.maximumMonthlyPayment) + " extra per month");
+			}
+			
+			System.out.println(hasRun);
 		} catch (Exception e) {
 			System.err.println("Error in creating info");
 		}
@@ -244,8 +267,14 @@ public class DebtDestroyerUIController {
 				try {
 					calculateSnowball();
 				} catch (DebtGrowingFasterThanPaying e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
 				}
 			});
 			this.calculateSnowball.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
@@ -277,7 +306,20 @@ public class DebtDestroyerUIController {
 			this.fiftyThirtyTwentyPane.getChildren().add(fiftyThirtyTwentyInfo);
 			
 			// Add 50/30/20 Method
-			this.calculateFiftyThirtyTwenty.setOnAction(e -> calculateFiftyThirtyTwenty());
+			this.calculateFiftyThirtyTwenty.setOnAction(e -> {
+				try {
+					calculateFiftyThirtyTwenty();
+				} catch (DebtGrowingFasterThanPaying e1) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
+				}
+			});
 			this.calculateFiftyThirtyTwenty.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
 			this.calculateFiftyThirtyTwenty.setTextFill(Color.WHITE);
 			this.calculateFiftyThirtyTwenty.setLayoutY(200.0);
@@ -311,8 +353,14 @@ public class DebtDestroyerUIController {
 				try {
 					calculateAvalanche();
 				} catch (DebtGrowingFasterThanPaying e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Debt Growing Faster than Paying");
+					alert.setContentText(e1.errorMessage);
+					alert.showAndWait().ifPresent(response -> {
+					    if (response == ButtonType.OK) {
+					    	alert.close();
+					    }
+					});
 				}
 			});
 			this.calculateAvalanche.setStyle("-fx-background-color: skyBlue; -fx-background-radius: 100;");
@@ -331,13 +379,15 @@ public class DebtDestroyerUIController {
 				this.window.getChildren().add(this.congrats);
 				this.window.getChildren().add(this.congratsAmount);
 			}
+			
+			this.hasRun = window.getChildren().contains(this.avalanchePane);
 		}
 	}
 	
 	// Creates debts from entries given, calculates maximum monthly payments
 	private void createDebts() {
 		// TODO fix recalc
-		
+		this.debts.clear();
 		this.debtEntries.get(0).clear();
 		this.debtEntries.get(0).add(originalLoanProviderEntry);
 		this.debtEntries.get(0).add(originalAmountEntry);
@@ -348,7 +398,18 @@ public class DebtDestroyerUIController {
 		try {
 			// Get starting maximum monthly payment
 			this.maximumMonthlyPayment = (Double.valueOf(this.incomeEntry.getText()) / 12) - (Double.valueOf(this.monthlyExpenseEntry.getText()));
-			System.out.println("maximum monthly payment thus far: " + this.maximumMonthlyPayment);
+			if (this.maximumMonthlyPayment <= 0) {
+				throw new ExpensesGreaterthanIncome();
+			}
+		} catch (ExpensesGreaterthanIncome e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setHeaderText("Expenses Greater Than Income");
+			alert.setContentText("Your expenses are greater than your income! Please consider finding a way to lower your monthly expenses.");
+			alert.showAndWait().ifPresent(response -> {
+			    if (response == ButtonType.OK) {
+			    	alert.close();
+			    }
+			});
 		} catch (Exception e) {
 			// Display error message if entry's are invalid
 			Alert alert = new Alert(AlertType.ERROR);
@@ -401,38 +462,289 @@ public class DebtDestroyerUIController {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(),this.maximumMonthlyPayment);
-		String[][] snowprint = snowPayoff.getPayoffInfo();
-		System.out.println();
-		snow.printMatrix(snowprint,5);
+		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
+		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
+		
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
+		
+		for (int i = 0; i < snowPayoffInfo.length; i++) {
+			if (data.containsKey(snowPayoffInfo[i][0])) {
+				ObservableList<DebtDisplay> temp = data.get(snowPayoffInfo[i][0]);
+				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				
+				data.put(snowPayoffInfo[i][0], temp);
+			} else {
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
+				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				data.put(snowPayoffInfo[i][0], temp);
+			}
+		}
+		
+		Label methodTitle = new Label("Snowball Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the Snowbal method, here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
+			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
+			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
+			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
+			
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(70);
+			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
+		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
+		this.window.getChildren().add(dataPane);
 	}
 	
-	public void calculateFiftyThirtyTwenty() {
-		System.out.println("Will run 50/30/20");
+	@SuppressWarnings("unchecked")
+	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
+		double income = Double.valueOf(this.incomeEntry.getText());
+		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 7.0);
+		
+		String[][] fiftyThirtyTwentyPayoff = fiftyThirtyTwenty.getPayoff();
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
+		
+		for (int i = 0; i < fiftyThirtyTwentyPayoff.length; i++) {
+			if (data.containsKey(fiftyThirtyTwentyPayoff[i][0])) {
+				ObservableList<DebtDisplay> temp = data.get(fiftyThirtyTwentyPayoff[i][0]);
+				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				
+				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
+			} else {
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
+				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
+			}
+		}
+		
+		Label methodTitle = new Label("Avalanche Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the 50/30/20 method. We assume your consolidated loan has an interest rate of 7.0%. Here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
+			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
+			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
+			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
+			
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(70);
+			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
+		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
+		this.window.getChildren().add(dataPane);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
+		this.dataPane.getChildren().clear();
+		if (this.window.getChildren().contains(this.dataPane)) {
+			this.window.getChildren().remove(this.window.getChildren().size() - 1);
+		}
+		
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(),this.maximumMonthlyPayment);
-		String[][] aveprint = avePayoff.getPayoffInfo();
-		System.out.println();
-		ave.printMatrix(aveprint, 5);
-	}
-	
-	// Lowers all the elements in the pane with the pane
-	private void updatePaneChildrenPos(Pane pane, Boolean lowering) {
-//		if (lowering) {
-//			ObservableList<Node> children = pane.getChildren();
-//			for (Node child : children) {
-//				child.setLayoutY(child.getLayoutY() + 90);
-//			}
-//		} else {
-//			ObservableList<Node> children = pane.getChildren();
-//			for (Node child : children) {
-//				child.setLayoutY(child.getLayoutY() - 90);
-//			}
-//		}
+		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
+		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
+		
+		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
+		
+		for (int i = 0; i < avePayoffInfo.length; i++) {
+			if (data.containsKey(avePayoffInfo[i][0])) {
+				ObservableList<DebtDisplay> temp = data.get(avePayoffInfo[i][0]);
+				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				
+				data.put(avePayoffInfo[i][0], temp);
+			} else {
+				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
+				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
+				temp.add(new DebtDisplay(tempArray));
+				data.put(avePayoffInfo[i][0], temp);
+			}
+		}
+		
+		Label methodTitle = new Label("Avalanche Method");
+		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
+		methodTitle.setLayoutX(250);
+		methodTitle.setLayoutY(10);
+		this.dataPane.getChildren().add(methodTitle);
+		
+		Label info = new Label("You've seleceted the Avalanche method, here's a quick overview of how your pay off would look using this method:");
+		info.setLayoutX(20);
+		info.setLayoutY(30);
+		info.setPrefWidth(600);
+		info.setWrapText(true);
+		this.dataPane.getChildren().add(info);
+		
+		int reps = 1;
+		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			TableView tableView = new TableView();
+			tableView.setEditable(true);
+			
+			TableColumn title = new TableColumn(entry.getKey());
+			TableColumn yearCol = new TableColumn("Year");
+			yearCol.setMinWidth(200);
+			yearCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("year")
+			);
+			TableColumn amountCol = new TableColumn("Amount Start");
+			amountCol.setMinWidth(150);
+			amountCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("amount")
+			);
+			TableColumn spendCol = new TableColumn("Amount Spent");
+			spendCol.setMinWidth(150);
+			spendCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("spend")
+			);
+			TableColumn leftCol = new TableColumn("Amount Left");
+			leftCol.setMinWidth(150);
+			leftCol.setCellValueFactory(
+					new PropertyValueFactory<DebtDisplay, String>("left")
+			);
+			
+			tableView.setItems(entry.getValue());
+			tableView.getColumns().add(title);
+			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
+			
+			if (reps > 1) {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
+				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
+				tableView.setLayoutY(this.dataPane.getChildren().get(this.dataPane.getChildren().size() - 1).getLayoutY() + 420);
+			} else {
+				this.window.setPrefHeight(this.window.getPrefHeight() + 450);
+				this.dataPane.setPrefHeight(450);
+				tableView.setLayoutY(70);
+			}
+			
+			this.dataPane.getChildren().add(tableView);
+			tableView.setLayoutX(0);
+			
+			
+			reps += 1;
+		}
+		
+		this.dataPane.setLayoutX(70);
+		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
+		
+		this.window.getChildren().add(dataPane);
+
 	}
 }
