@@ -31,8 +31,8 @@ public class FiftyThirtyTwenty {
 
     FiftyThirtyTwenty(ArrayList<Debt> debtlist, double income, double APR) throws DebtGrowingFasterThanPaying {
         this.debts = debtlist;
-        this.APR = APR;
-        twentyPercentIncome = income * .20;
+        this.APR = APR/100;
+        twentyPercentIncome = (income/12) * .20;
         for (int i =0; i < this.debts.size(); i++){
             this.totalMonthlyDebtPayments = this.totalMonthlyDebtPayments + this.debts.get(i).minimumMonthlyPayment;
             this.totalAmountOwedAcrossAllDebt = this.totalAmountOwedAcrossAllDebt + this.debts.get(i).totalAmountOwed;
@@ -105,10 +105,10 @@ public class FiftyThirtyTwenty {
                 }
                 else {
                     if (year < 2){
-                        yearString = String.valueOf(year +1) + "Year";
+                        yearString = String.valueOf(year +1) + " Year";
                     }
                     else {
-                        yearString = String.valueOf(year + 1) + "Years";
+                        yearString = String.valueOf(year + 1) + " Years";
                     }
                 }
                // System.out.println("Year: " + year + " Month: " + month + 1 + " Monthly Paid to balance: " + monthlyPaidToBalance +
