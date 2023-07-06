@@ -585,7 +585,7 @@ public class DebtDestroyerUIController {
 			}
 		}
 		
-		Label methodTitle = new Label("Avalanche Method");
+		Label methodTitle = new Label("50/30/20 Method");
 		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
 		methodTitle.setLayoutX(250);
 		methodTitle.setLayoutY(10);
