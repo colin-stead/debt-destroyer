@@ -1,5 +1,6 @@
 package DebtDestroyer;
 import java.lang.Math;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -53,7 +54,8 @@ public class FiftyThirtyTwenty {
         return minMonthsTimeToPayoff;
     }
 
-    private String[][] calculatePayoff(){
+    private String[][] calculatePayoff() throws DebtGrowingFasterThanPaying{
+    	NumberFormat formatter = NumberFormat.getCurrencyInstance();
         Double yearsToPayOff = this.timeToPayOff/12.0;
         int x = (int) Math.ceil(yearsToPayOff);
         String[][] payOffData = new String[x][5];
@@ -114,11 +116,16 @@ public class FiftyThirtyTwenty {
                // System.out.println("Year: " + year + " Month: " + month + 1 + " Monthly Paid to balance: " + monthlyPaidToBalance +
                //         " Monthly Interest: " + monthlyIntereest + " monthly Balance Remaining: " + currentAmountRemaining);
             }
-            payOffData[i][0] = "50/30/20";
-            payOffData[i][1] = yearString;
-            payOffData[i][2] = String.valueOf(startingBalance);
-            payOffData[i][3] = String.valueOf(yearlyAmountPaid);
-            payOffData[i][4] = String.valueOf(currentAmountRemaining);
+            
+            try {
+	            payOffData[i][0] = "50/30/20";
+	            payOffData[i][1] = yearString;
+	            payOffData[i][2] = formatter.format(startingBalance);
+	            payOffData[i][3] = formatter.format(yearlyAmountPaid);
+	            payOffData[i][4] = formatter.format(currentAmountRemaining);
+            } catch (NumberFormatException e) {
+            	throw new DebtGrowingFasterThanPaying(twentyPercentIncome, APR);
+            }
         }
         //printMatrix(payOffData);
         return payOffData;
