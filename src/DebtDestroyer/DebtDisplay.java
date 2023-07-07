@@ -3,6 +3,7 @@ package DebtDestroyer;
 import javafx.beans.property.SimpleStringProperty;
 
 public class DebtDisplay {
+	// Just a basic class to get string properties to display to our data tables
 	private final SimpleStringProperty year;
 	private final SimpleStringProperty amount;
 	private final SimpleStringProperty spend;

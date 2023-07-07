@@ -63,6 +63,7 @@ public class DebtDestroyerUIController {
 	
 	// Add a new debt field
 	public void addDebtField () {
+		// Clears and removes data pane if it has content so we don't overlap
 		this.dataPane.getChildren().clear();
 		if (this.window.getChildren().contains(this.dataPane)) {
 			this.window.getChildren().remove(this.window.getChildren().size() - 1);
@@ -82,6 +83,7 @@ public class DebtDestroyerUIController {
 		this.labelYPosition += 90;
 		this.entryYPosition += 90;
 		
+		// Update to add new entries
 		this.debtEntries.add(new ArrayList<TextField>());
 		
 		// Changes the position of our buttons and sizes of our panes
@@ -154,6 +156,7 @@ public class DebtDestroyerUIController {
 	
 	// Delete most recently added debt field
 	public void deleteDebtField() {
+		// Clears and removes data pane if it has content so we don't overlap
 		this.dataPane.getChildren().clear();
 		if (this.window.getChildren().contains(this.dataPane)) {
 			this.window.getChildren().remove(this.window.getChildren().size() - 1);
@@ -199,6 +202,7 @@ public class DebtDestroyerUIController {
 	
 	// Creates debts, and components to choose what method you would like to use to 
 	public void calculateDebts() {
+		// Formatter for monetary values
 		NumberFormat formatter = NumberFormat.getCurrencyInstance();
 		
 		try {
@@ -213,6 +217,7 @@ public class DebtDestroyerUIController {
 					this.hasRun = false;
 				}
 			} else {
+				// Changes available payment amount so user knows how much they have
 				this.congratsAmount.setText(formatter.format(this.maximumMonthlyPayment) + " extra per month");
 			}
 			
@@ -233,6 +238,7 @@ public class DebtDestroyerUIController {
 			this.congrats.setLayoutX(35.0);
 			
 			// Congrats value
+			// Formatter for monetary values
 			NumberFormat formatter = NumberFormat.getCurrencyInstance();
 			this.congratsAmount.setText(formatter.format(this.maximumMonthlyPayment) + " extra per month");
 			this.congratsAmount.setFont(Font.font("System", FontWeight.BOLD, 24));
@@ -241,6 +247,7 @@ public class DebtDestroyerUIController {
 			this.congratsAmount.setLayoutX(35.0);
 			
 			// Add Panes
+			//Snowball pane
 			this.snowballPane.setLayoutX(40.0);
 			this.snowballPane.setLayoutY(this.congratsAmount.getLayoutY() + 50);
 			this.snowballPane.setStyle("-fx-border-color: lightGray;");
@@ -380,15 +387,18 @@ public class DebtDestroyerUIController {
 				this.window.getChildren().add(this.congratsAmount);
 			}
 			
+			// The program hasRun if any of the panes are a child of the window, if one exists all the panes exist
 			this.hasRun = window.getChildren().contains(this.avalanchePane);
 		}
 	}
 	
 	// Creates debts from entries given, calculates maximum monthly payments
 	private void createDebts() {
-		// TODO fix recalc
+		// clears debt entries
 		this.debts.clear();
 		this.debtEntries.get(0).clear();
+		
+		// Adds original entry back in as the first entry
 		this.debtEntries.get(0).add(originalLoanProviderEntry);
 		this.debtEntries.get(0).add(originalAmountEntry);
 		this.debtEntries.get(0).add(originalMinimumMonthlyPaymentEntry);
@@ -398,10 +408,12 @@ public class DebtDestroyerUIController {
 		try {
 			// Get starting maximum monthly payment
 			this.maximumMonthlyPayment = (Double.valueOf(this.incomeEntry.getText()) / 12) - (Double.valueOf(this.monthlyExpenseEntry.getText()));
+			// Check maximum monthly payment
 			if (this.maximumMonthlyPayment <= 0) {
 				throw new ExpensesGreaterthanIncome();
 			}
 		} catch (ExpensesGreaterthanIncome e) {
+			// Display error message for expenses greater than income
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setHeaderText("Expenses Greater Than Income");
 			alert.setContentText("Your expenses are greater than your income! Please consider finding a way to lower your monthly expenses.");
@@ -411,7 +423,7 @@ public class DebtDestroyerUIController {
 			    }
 			});
 		} catch (Exception e) {
-			// Display error message if entry's are invalid
+			// Display error message if entries are invalid
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setHeaderText("Invalid Entry");
 			alert.setContentText("Please make sure income and minimum monthly payment values are numbers.");
@@ -432,6 +444,7 @@ public class DebtDestroyerUIController {
 				double mmp =  Double.valueOf(this.debtEntries.get(i).get(2).getText());
 				// Update maximum monthly payment for a debt
 				this.maximumMonthlyPayment -= mmp;
+				// Check if there's money to pay with
 				if (this.maximumMonthlyPayment <= 0) {
 					throw new ExpensesGreaterthanIncome();
 				}
@@ -441,6 +454,7 @@ public class DebtDestroyerUIController {
 				// Create new Debt, add it to debts array list
 				this.debts.add(new Debt(debtName, amount, mmp, interestRate));
 			} catch (ExpensesGreaterthanIncome e) {
+				// Display error message for expenses greater than income
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setHeaderText("Expenses Greater Than Income");
 				alert.setContentText("Your expenses are greater than your income! Please consider finding a way to lower your monthly expenses.");
@@ -450,6 +464,7 @@ public class DebtDestroyerUIController {
 				    }
 				});
 			} catch (Exception e) {
+				// Display invalid entry message
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setHeaderText("Invalid Entry");
 				alert.setContentText("Please make sure all entries for \"" + debtEntries.get(i).get(0).getText() + "\" are correct.\n\t-Loan Provider should be text.\n\t- Amount, Minimum Monthly Payment, and Interest Rate should all be numbers.");
@@ -464,18 +479,24 @@ public class DebtDestroyerUIController {
 	
 	@SuppressWarnings("unchecked")
 	public void calculateSnowball() throws DebtGrowingFasterThanPaying {
+		// Clears and removes data pane if it has content so we don't overlap
 		this.dataPane.getChildren().clear();
 		if (this.window.getChildren().contains(this.dataPane)) {
 			this.window.getChildren().remove(this.window.getChildren().size() - 1);
 		}
 		
+		// Create new snowball class and calculate snow payoff info
 		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
 		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
 		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
 		
+		// Reformat data to map to display in table
 		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
 		
+		// Populating our map
 		for (int i = 0; i < snowPayoffInfo.length; i++) {
+			// If our map has the key, add the payoff info to the entry with the corresponding key
+			// (Key found by entry loan name)
 			if (data.containsKey(snowPayoffInfo[i][0])) {
 				ObservableList<DebtDisplay> temp = data.get(snowPayoffInfo[i][0]);
 				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
@@ -483,6 +504,7 @@ public class DebtDestroyerUIController {
 				
 				data.put(snowPayoffInfo[i][0], temp);
 			} else {
+				// Otherwise add the new entry with the correct key
 				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
 				String[] tempArray = {snowPayoffInfo[i][1], snowPayoffInfo[i][2], snowPayoffInfo[i][3], snowPayoffInfo[i][4]};
 				temp.add(new DebtDisplay(tempArray));
@@ -490,12 +512,14 @@ public class DebtDestroyerUIController {
 			}
 		}
 		
+		// Add title
 		Label methodTitle = new Label("Snowball Method");
 		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
 		methodTitle.setLayoutX(250);
 		methodTitle.setLayoutY(10);
 		this.dataPane.getChildren().add(methodTitle);
 		
+		//Add description
 		Label info = new Label("You've seleceted the Snowbal method, here's a quick overview of how your pay off would look using this method:");
 		info.setLayoutX(20);
 		info.setLayoutY(30);
@@ -503,8 +527,10 @@ public class DebtDestroyerUIController {
 		info.setWrapText(true);
 		this.dataPane.getChildren().add(info);
 		
+		// Populate our tables
 		int reps = 1;
 		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			// Create a table for each entry in the hashmap
 			TableView tableView = new TableView();
 			tableView.setEditable(true);
 			
@@ -534,6 +560,7 @@ public class DebtDestroyerUIController {
 			tableView.getColumns().add(title);
 			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
 			
+			// Update display to fit new data
 			if (reps > 1) {
 				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
 				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
@@ -544,6 +571,7 @@ public class DebtDestroyerUIController {
 				tableView.setLayoutY(70);
 			}
 			
+			// Add the table to the data pane
 			this.dataPane.getChildren().add(tableView);
 			tableView.setLayoutX(0);
 			
@@ -551,6 +579,7 @@ public class DebtDestroyerUIController {
 			reps += 1;
 		}
 		
+		// Add the data pane to the window
 		this.dataPane.setLayoutX(70);
 		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
 		
@@ -559,18 +588,24 @@ public class DebtDestroyerUIController {
 	
 	@SuppressWarnings("unchecked")
 	public void calculateFiftyThirtyTwenty() throws DebtGrowingFasterThanPaying {
+		// Clears and removes data pane if it has content so we don't overlap
 		this.dataPane.getChildren().clear();
 		if (this.window.getChildren().contains(this.dataPane)) {
 			this.window.getChildren().remove(this.window.getChildren().size() - 1);
 		}
 		
+		// Create new 50/30/20 class and calculate payoff info
 		double income = Double.valueOf(this.incomeEntry.getText());
 		FiftyThirtyTwenty fiftyThirtyTwenty = new FiftyThirtyTwenty(this.debts, income, 7.0);
-		
 		String[][] fiftyThirtyTwentyPayoff = fiftyThirtyTwenty.getPayoff();
+		
+		// Reformat data to map to display in table
 		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
 		
+		// Populating our map
 		for (int i = 0; i < fiftyThirtyTwentyPayoff.length; i++) {
+			// If our map has the key, add the payoff info to the entry with the corresponding key
+			// (Key found by entry loan name)
 			if (data.containsKey(fiftyThirtyTwentyPayoff[i][0])) {
 				ObservableList<DebtDisplay> temp = data.get(fiftyThirtyTwentyPayoff[i][0]);
 				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
@@ -578,6 +613,7 @@ public class DebtDestroyerUIController {
 				
 				data.put(fiftyThirtyTwentyPayoff[i][0], temp);
 			} else {
+				// Otherwise add the new entry with the correct key
 				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
 				String[] tempArray = {fiftyThirtyTwentyPayoff[i][1], fiftyThirtyTwentyPayoff[i][2], fiftyThirtyTwentyPayoff[i][3], fiftyThirtyTwentyPayoff[i][4]};
 				temp.add(new DebtDisplay(tempArray));
@@ -585,12 +621,14 @@ public class DebtDestroyerUIController {
 			}
 		}
 		
+		// Add title
 		Label methodTitle = new Label("50/30/20 Method");
 		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
 		methodTitle.setLayoutX(250);
 		methodTitle.setLayoutY(10);
 		this.dataPane.getChildren().add(methodTitle);
 		
+		// Add info
 		Label info = new Label("You've seleceted the 50/30/20 method. We assume your consolidated loan has an interest rate of 7.0%. Here's a quick overview of how your pay off would look using this method:");
 		info.setLayoutX(20);
 		info.setLayoutY(30);
@@ -598,8 +636,10 @@ public class DebtDestroyerUIController {
 		info.setWrapText(true);
 		this.dataPane.getChildren().add(info);
 		
+		// Populate our table
 		int reps = 1;
 		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			// Create a table for each entry in the hashmap
 			TableView tableView = new TableView();
 			tableView.setEditable(true);
 			
@@ -629,6 +669,7 @@ public class DebtDestroyerUIController {
 			tableView.getColumns().add(title);
 			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
 			
+			// Update display to fit new data
 			if (reps > 1) {
 				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
 				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
@@ -638,7 +679,7 @@ public class DebtDestroyerUIController {
 				this.dataPane.setPrefHeight(450);
 				tableView.setLayoutY(70);
 			}
-			
+			// Add the table to the data pane
 			this.dataPane.getChildren().add(tableView);
 			tableView.setLayoutX(0);
 			
@@ -646,26 +687,32 @@ public class DebtDestroyerUIController {
 			reps += 1;
 		}
 		
+		// Add the data pane to the window
 		this.dataPane.setLayoutX(70);
 		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
-		
 		this.window.getChildren().add(dataPane);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void calculateAvalanche() throws DebtGrowingFasterThanPaying {
+		// Clears and removes data pane if it has content so we don't overlap
 		this.dataPane.getChildren().clear();
 		if (this.window.getChildren().contains(this.dataPane)) {
 			this.window.getChildren().remove(this.window.getChildren().size() - 1);
 		}
 		
+		// Create new avalanche class and calculate avalanche payoff info
 		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
 		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
 		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
 		
+		// Reformat data to map to display in table
 		Map<String, ObservableList<DebtDisplay>> data = new HashMap<String, ObservableList<DebtDisplay>>();
 		
+		// Populating our map
 		for (int i = 0; i < avePayoffInfo.length; i++) {
+			// If our map has the key, add the payoff info to the entry with the corresponding key
+			// (Key found by entry loan name)
 			if (data.containsKey(avePayoffInfo[i][0])) {
 				ObservableList<DebtDisplay> temp = data.get(avePayoffInfo[i][0]);
 				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
@@ -673,6 +720,7 @@ public class DebtDestroyerUIController {
 				
 				data.put(avePayoffInfo[i][0], temp);
 			} else {
+				// Otherwise add the new entry with the correct key
 				ObservableList<DebtDisplay> temp = FXCollections.observableArrayList();
 				String[] tempArray = {avePayoffInfo[i][1], avePayoffInfo[i][2], avePayoffInfo[i][3], avePayoffInfo[i][4]};
 				temp.add(new DebtDisplay(tempArray));
@@ -680,12 +728,14 @@ public class DebtDestroyerUIController {
 			}
 		}
 		
+		// Add title
 		Label methodTitle = new Label("Avalanche Method");
 		methodTitle.setFont(Font.font("System", FontWeight.BOLD, 19));
 		methodTitle.setLayoutX(250);
 		methodTitle.setLayoutY(10);
 		this.dataPane.getChildren().add(methodTitle);
 		
+		// Add info
 		Label info = new Label("You've seleceted the Avalanche method, here's a quick overview of how your pay off would look using this method:");
 		info.setLayoutX(20);
 		info.setLayoutY(30);
@@ -693,8 +743,10 @@ public class DebtDestroyerUIController {
 		info.setWrapText(true);
 		this.dataPane.getChildren().add(info);
 		
+		// Populate our table
 		int reps = 1;
 		for (Entry<String, ObservableList<DebtDisplay>> entry : data.entrySet()) {
+			// Create a table for each entry in the hashmap
 			TableView tableView = new TableView();
 			tableView.setEditable(true);
 			
@@ -724,6 +776,7 @@ public class DebtDestroyerUIController {
 			tableView.getColumns().add(title);
 			title.getColumns().addAll(yearCol, amountCol, spendCol, leftCol);
 			
+			// Update display to fit new data
 			if (reps > 1) {
 				this.window.setPrefHeight(this.window.getPrefHeight() + 700);
 				this.dataPane.setPrefHeight(this.dataPane.getPrefHeight() + 700);
@@ -733,7 +786,7 @@ public class DebtDestroyerUIController {
 				this.dataPane.setPrefHeight(450);
 				tableView.setLayoutY(70);
 			}
-			
+			// Add the table to the data pane
 			this.dataPane.getChildren().add(tableView);
 			tableView.setLayoutX(0);
 			
@@ -741,10 +794,9 @@ public class DebtDestroyerUIController {
 			reps += 1;
 		}
 		
+		// Add the data pane to the window
 		this.dataPane.setLayoutX(70);
 		this.dataPane.setLayoutY(this.window.getChildren().get(this.window.getChildren().size() -1).getLayoutY() + 300);
-		
 		this.window.getChildren().add(dataPane);
-
 	}
 }
