@@ -486,8 +486,8 @@ public class DebtDestroyerUIController {
 		}
 		
 		// Create new snowball class and calculate snow payoff info
-		Snowball snow = new Snowball(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(), snow.getAmtPay());
+		Snowball snow = new Snowball(this.debts);
+		CalcPayoff snowPayoff = new CalcPayoff(snow.getDebtList(),this.maximumMonthlyPayment);
 		String[][] snowPayoffInfo = snowPayoff.getPayoffInfo();
 		
 		// Reformat data to map to display in table
@@ -702,8 +702,8 @@ public class DebtDestroyerUIController {
 		}
 		
 		// Create new avalanche class and calculate avalanche payoff info
-		Avalanch ave = new Avalanch(this.debts, this.maximumMonthlyPayment);
-		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(), ave.getAmtPay());
+		Avalanch ave = new Avalanch(this.debts);
+		CalcPayoff avePayoff = new CalcPayoff(ave.getDebtList(),this.maximumMonthlyPayment);
 		String[][] avePayoffInfo = avePayoff.getPayoffInfo();
 		
 		// Reformat data to map to display in table
