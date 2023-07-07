@@ -37,6 +37,13 @@ public class Snowball {
         copyDebt(this.debts);
       //  calculatePayoff();
     }
+     Snowball(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
+        this.debts = debtlist;
+        paidPY = new double[debtlist.size()];
+        sortDebtList();
+        copyDebt(this.debts);
+      //  calculatePayoff();
+    }
 
     // TODO this is a place holder. Going testing abilty to get name from this debt
     // list from snowball class.
@@ -66,7 +73,7 @@ public class Snowball {
             debtCopy[i][0] = debtList.get(i).debtName; // 0 = lender name
             debtCopy[i][1] = String.valueOf(debtList.get(i).totalAmountOwed); // 1 = total amount owed
             debtCopy[i][2] = String.valueOf(debtList.get(i).minimumMonthlyPayment); // 2 = minumim montly payment amount
-            debtCopy[i][3] = String.valueOf((debtList.get(i).APR / 100)); // 3 = Annual Precentage rate.
+            debtCopy[i][3] = String.valueOf(((debtList.get(i).APR / 100))/12); // 3 = Annual Precentage rate.
             yearStart[i] = String.valueOf(debtList.get(i).totalAmountOwed); // set starting loan value.
         }
 

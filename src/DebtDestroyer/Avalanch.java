@@ -35,6 +35,11 @@ public class Avalanch {
         paidPY = new double[debtlist.size()];
       //calculatePayoff();
     }
+        Avalanch(ArrayList<Debt> debtlist) throws DebtGrowingFasterThanPaying {
+        this.debts = debtlist;
+        paidPY = new double[debtlist.size()];
+      //calculatePayoff();
+    }
 
     private void copyDebt(ArrayList<Debt> debtList) {
         yearStart = new String[debtList.size()];
@@ -43,7 +48,7 @@ public class Avalanch {
             debtCopy[i][0] = debtList.get(i).debtName; // 0 = lender name
             debtCopy[i][1] = String.valueOf(debtList.get(i).totalAmountOwed); // 1 = total amount owed
             debtCopy[i][2] = String.valueOf(debtList.get(i).minimumMonthlyPayment); // 2 = minumim montly payment amount
-            debtCopy[i][3] = String.valueOf((debtList.get(i).APR / 100)); // 3 = Annual Precentage rate.
+            debtCopy[i][3] = String.valueOf(((debtList.get(i).APR / 100))/12); // 3 = Annual Precentage rate.
             yearStart[i] = String.valueOf(debtList.get(i).totalAmountOwed); // set starting loan value.
         }
         //TODO remove this. This is for debug
